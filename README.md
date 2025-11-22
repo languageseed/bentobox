@@ -250,6 +250,29 @@ Bentobox is built to be customizable. You can:
 
 ## 🆘 Troubleshooting
 
+### Known Issues
+
+#### Ulauncher Crashes on First Boot
+
+**Symptom**: After installation and reboot, you see an error: "The application Ulauncher has closed unexpectedly."
+
+**Why**: Ulauncher (the app launcher) sometimes crashes on first launch on fresh Ubuntu 24.04 installations. This is a known issue with Ulauncher's PPA package, not with Bentobox.
+
+**Impact**: Cosmetic only - doesn't affect your system, Docker, or any other applications.
+
+**Solution**:
+1. **Quick Fix**: Click "Don't send" and check "Remember this in future". Ulauncher will restart automatically.
+2. **If it persists**: Reboot the system - Ulauncher should work fine after reboot.
+3. **Alternative**: Remove Ulauncher if you don't need it:
+   ```bash
+   sudo apt remove --purge ulauncher
+   sudo apt autoremove
+   ```
+
+**Note**: Ulauncher is optional. Ubuntu has built-in app search (press `Super` key). You can safely remove Ulauncher without affecting other functionality.
+
+---
+
 ### Installation Issues
 
 ```bash
