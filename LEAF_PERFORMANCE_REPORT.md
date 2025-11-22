@@ -1,8 +1,10 @@
-# Leaf Performance Tuning Report
+# Ubuntu 24.04 (Bentobox) Performance Tuning Report
 
 **Generated:** November 22, 2024  
-**System:** Ubuntu 24.04.3 LTS (Bentobox)  
-**Hardware:** Intel i9-13980HX (32 cores), 62GB RAM, 1.8TB ZFS
+**System Analyzed:** Ubuntu 24.04.3 LTS (Bentobox installation)  
+**Example Hardware:** Intel i9-13980HX (32 cores), 62GB RAM, 1.8TB ZFS
+
+> **Note:** This report was created based on analysis of a specific system ("leaf"), but the recommendations and scripts are generic and will work on any Ubuntu 24.04 Bentobox installation.
 
 ---
 
@@ -210,7 +212,16 @@ sudo sysctl -p
 
 ## 🛠️ Automated Implementation Script
 
-See `leaf-performance-tuning.sh` for automated implementation.
+See `bentobox-performance-tuning.sh` for automated implementation.
+
+**Usage:**
+```bash
+# Download to your Bentobox system
+./bentobox-performance-tuning.sh
+
+# Script will prompt for sudo password when needed
+# Works with any user account that has sudo privileges
+```
 
 ---
 

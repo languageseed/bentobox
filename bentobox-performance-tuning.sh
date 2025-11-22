@@ -1,13 +1,21 @@
 #!/bin/bash
 
-# Leaf Performance Tuning Script
+# Bentobox Performance Tuning Script
 # Optimizes Ubuntu 24.04 (Bentobox) for faster boot, shutdown, and better performance
 # Safe to run - creates backups and can be reversed
+# Works with any user account with sudo privileges
 
 set -e
 
+# Check if running with sudo/root privileges
+if [ "$EUID" -eq 0 ]; then
+    echo "⚠️  Please do NOT run this script with sudo or as root."
+    echo "   Run it as your regular user - it will prompt for sudo when needed."
+    exit 1
+fi
+
 echo "=========================================="
-echo "  Leaf Performance Optimization Script"
+echo "  Bentobox Performance Optimization"
 echo "=========================================="
 echo ""
 echo "This script will optimize:"
@@ -19,8 +27,13 @@ echo "⚠️  Press Ctrl+C to cancel, or Enter to continue..."
 read -r
 
 # Create a log
-LOG_FILE="/tmp/leaf-performance-tuning-$(date +%Y%m%d-%H%M%S).log"
+LOG_FILE="/tmp/bentobox-performance-tuning-$(date +%Y%m%d-%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo ""
+echo "Running as user: $USER"
+echo "Log file: $LOG_FILE"
+echo ""
 
 echo ""
 echo "=== PRIORITY 1: Fix Critical Issues ==="

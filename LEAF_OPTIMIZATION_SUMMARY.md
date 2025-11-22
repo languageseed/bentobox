@@ -1,25 +1,29 @@
-# 🎯 Leaf Performance Optimization Summary
+# 🎯 Bentobox Performance Optimization Guide
 
-## System Specifications
+## Overview
+This guide provides comprehensive performance optimization for Ubuntu 24.04 Bentobox installations, addressing common boot/shutdown delays and system responsiveness issues.
+
+## Example System Analysis
+Based on analysis of a typical high-performance Bentobox installation:
 - **CPU:** Intel Core i9-13980HX (32 cores)
-- **RAM:** 62GB (only 5.4GB used)
-- **Storage:** 1.8TB ZFS
+- **RAM:** 62GB (typically underutilized)
+- **Storage:** ZFS filesystem
 - **OS:** Ubuntu 24.04.3 LTS (Bentobox)
 
 ---
 
 ## 📊 Performance Analysis
 
-### Current Boot Time: 50.8 seconds
+### Typical Boot Time Issues: ~50 seconds
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ Boot Phase Breakdown                                    │
+│ Boot Phase Breakdown (Typical Fresh Installation)      │
 ├─────────────────────────────────────────────────────────┤
-│ Firmware:       ████████ 6.5s                          │
-│ Bootloader:     ████ 3.9s                              │
-│ Kernel:         ██████████████████████ 26.7s           │
-│ Userspace:      ██████████████ 13.7s                   │
+│ Firmware:       ████████ ~6-7s                         │
+│ Bootloader:     ████ ~3-4s                             │
+│ Kernel:         ██████████████████████ ~25-27s         │
+│ Userspace:      ██████████████ ~12-15s                 │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -133,32 +137,38 @@ Shutdown: ████ 10-15s              (83% faster)
 
 ## 🎯 Implementation Steps
 
-### Step 1: Review Analysis
+### Step 1: Download Scripts
 ```bash
-ssh leaf
+# Scripts are in the Bentobox repository
+# Copy to your system via git clone or direct download
+```
+
+### Step 2: Review Analysis
+```bash
 cat ~/LEAF_PERFORMANCE_REPORT.md
 ```
 
-### Step 2: Run Optimization
+### Step 3: Run Optimization
 ```bash
-./leaf-performance-tuning.sh
+./bentobox-performance-tuning.sh
+# You'll be prompted for your sudo password
 ```
 
-### Step 3: Reboot
+### Step 4: Reboot
 ```bash
 sudo reboot
 ```
 
-### Step 4: Verify Results
+### Step 5: Verify Results
 ```bash
 systemd-analyze
 systemd-analyze blame | head -20
 systemctl --failed
 ```
 
-### Step 5 (Optional): Undo if Needed
+### Step 6 (Optional): Undo if Needed
 ```bash
-./leaf-performance-tuning-undo.sh
+./bentobox-performance-tuning-undo.sh
 ```
 
 ---
@@ -205,15 +215,17 @@ systemctl show -p DefaultTimeoutStopUSec
 
 ---
 
-## 📝 Files Delivered
+## 📝 Files in Repository
 
 | File | Description | Location |
 |------|-------------|----------|
-| **LEAF_PERFORMANCE_REPORT.md** | Detailed analysis & recommendations | `~/` on leaf |
-| **leaf-performance-tuning.sh** | Automated optimization script | `~/` on leaf |
-| **leaf-performance-tuning-undo.sh** | Reversal script | `~/` on leaf |
-| **LEAF_TUNING_QUICKSTART.md** | Quick start guide | Local Mac |
-| **LEAF_OPTIMIZATION_SUMMARY.md** | This summary | Local Mac |
+| **LEAF_PERFORMANCE_REPORT.md** | Detailed analysis & recommendations | Repository |
+| **bentobox-performance-tuning.sh** | Automated optimization script | Repository |
+| **bentobox-performance-tuning-undo.sh** | Reversal script | Repository |
+| **LEAF_TUNING_QUICKSTART.md** | Quick start guide | Repository |
+| **LEAF_OPTIMIZATION_SUMMARY.md** | This summary | Repository |
+
+> **Security Note:** Scripts use standard `sudo` prompts - no hardcoded passwords or user-specific code. Works with any user account that has sudo privileges.
 
 ---
 
@@ -256,7 +268,7 @@ systemctl show -p DefaultTimeoutStopUSec
 
 ## 🎉 Ready to Optimize?
 
-The leaf server is a powerful machine being held back by unnecessary services and timeouts. With these optimizations, you'll have:
+Bentobox systems are powerful but can be held back by unnecessary services and timeouts. With these optimizations, you'll have:
 
 - ⚡ **2x faster boot**
 - ⚡ **6x faster shutdown**
@@ -266,7 +278,8 @@ The leaf server is a powerful machine being held back by unnecessary services an
 **Run the script and enjoy a snappier system!**
 
 ```bash
-ssh leaf
-./leaf-performance-tuning.sh
+./bentobox-performance-tuning.sh
 ```
+
+> **Note:** These scripts work on any Ubuntu 24.04 Bentobox installation, regardless of username or hardware configuration.
 

@@ -1,12 +1,20 @@
 #!/bin/bash
 
-# Leaf Performance Tuning Undo Script
-# Reverses all optimizations made by leaf-performance-tuning.sh
+# Bentobox Performance Tuning Undo Script
+# Reverses all optimizations made by bentobox-performance-tuning.sh
+# Works with any user account with sudo privileges
 
 set -e
 
+# Check if running with sudo/root privileges
+if [ "$EUID" -eq 0 ]; then
+    echo "⚠️  Please do NOT run this script with sudo or as root."
+    echo "   Run it as your regular user - it will prompt for sudo when needed."
+    exit 1
+fi
+
 echo "=========================================="
-echo "  Leaf Performance Tuning - UNDO Script"
+echo "  Bentobox Performance Tuning - UNDO"
 echo "=========================================="
 echo ""
 echo "This will reverse all performance optimizations."
@@ -14,8 +22,13 @@ echo ""
 echo "⚠️  Press Ctrl+C to cancel, or Enter to continue..."
 read -r
 
-LOG_FILE="/tmp/leaf-performance-undo-$(date +%Y%m%d-%H%M%S).log"
+LOG_FILE="/tmp/bentobox-performance-undo-$(date +%Y%m%d-%H%M%S).log"
 exec > >(tee -a "$LOG_FILE") 2>&1
+
+echo ""
+echo "Running as user: $USER"
+echo "Log file: $LOG_FILE"
+echo ""
 
 echo ""
 echo "=== Re-enabling services ==="

@@ -1,11 +1,12 @@
-# Leaf Performance Tuning - Quick Start Guide
+# Bentobox Performance Tuning - Quick Start Guide
 
-## 📊 Current Performance
-- **Boot Time:** 50.8 seconds
-- **Shutdown Time:** ~90 seconds (default timeout)
+## 📊 Typical Performance Issues
+Based on analysis of fresh Bentobox installations, common issues include:
+- **Boot Time:** ~50 seconds (target: 25-30s)
+- **Shutdown Time:** ~90 seconds (target: 10-15s)
 - **Main Issues:**
-  - Synergy service: 90 seconds (FAILING)
-  - NetworkManager-wait-online: 6 seconds (unnecessary)
+  - Failed/slow services (Synergy, etc.)
+  - NetworkManager-wait-online (unnecessary)
   - Several unused services running
 
 ## 🚀 Expected Improvements
@@ -14,20 +15,22 @@
 - **Memory:** ~50-100MB freed
 - **Overall:** Snappier, more responsive
 
-## 📋 Files on Leaf Server
-Three files have been copied to `/home/labadmin/`:
+## 📋 Scripts Available
+
+Three scripts for performance optimization:
 
 1. **LEAF_PERFORMANCE_REPORT.md** - Detailed analysis and recommendations
-2. **leaf-performance-tuning.sh** - Automated optimization script
-3. **leaf-performance-tuning-undo.sh** - Script to reverse all changes
+2. **bentobox-performance-tuning.sh** - Automated optimization script
+3. **bentobox-performance-tuning-undo.sh** - Script to reverse all changes
 
 ## ⚡ Quick Implementation
 
-### Option 1: Automated (Recommended)
+### Automated (Recommended)
 ```bash
-ssh leaf
+# On your Bentobox system
 cd ~
-./leaf-performance-tuning.sh
+./bentobox-performance-tuning.sh
+# Script will prompt for sudo password when needed
 # Review changes, press Enter to apply
 # Reboot when prompted
 ```
@@ -71,9 +74,8 @@ Read `LEAF_PERFORMANCE_REPORT.md` and apply only the optimizations you want.
 ### Reverting Changes
 If you need to undo everything:
 ```bash
-ssh leaf
 cd ~
-./leaf-performance-tuning-undo.sh
+./bentobox-performance-tuning-undo.sh
 ```
 
 ## 📈 Verify Results
@@ -121,10 +123,11 @@ Questions about specific optimizations? Check `LEAF_PERFORMANCE_REPORT.md` for d
 
 ---
 
-**Ready to optimize? SSH to leaf and run the script!**
+**Ready to optimize? Run the script on your Bentobox system!**
 
 ```bash
-ssh leaf
-./leaf-performance-tuning.sh
+./bentobox-performance-tuning.sh
 ```
+
+> **Note:** Scripts work with any user account that has sudo privileges. You'll be prompted for your password when needed.
 
