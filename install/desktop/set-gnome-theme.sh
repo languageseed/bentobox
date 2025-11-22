@@ -6,3 +6,6 @@ source ~/.local/share/omakub/themes/tokyo-night/tophat.sh
 
 # Override with custom wallpaper
 source ~/.local/share/omakub/install/desktop/set-wallpaper.sh
+
+# Set GDM (login screen) background to match
+source ~/.local/share/omakub/install/desktop/set-gdm-background.sh
