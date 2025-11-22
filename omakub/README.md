@@ -23,7 +23,7 @@ Bentobox takes the excellent foundation of Omakub and refines it for professiona
 - 🐳 **Modern Container Management** - Portainer web UI instead of CLI tools
 - 🤖 **Local AI Development** - OpenWebUI + Ollama for running LLMs locally
 - 🌐 **Secure Remote Access** - Tailscale VPN for accessing your dev environment anywhere
-- 🖱️ **Multi-Computer Workflows** - Barrier/Synergy for KVM sharing across machines
+- 🖱️ **Multi-Computer Workflows** - Barrier for KVM sharing across machines
 - 🎨 **Beautiful Wallpapers** - 7 curated Pexels wallpapers included
 - 🎯 **Focused Tool Selection** - Streamlined to essential development tools
 
@@ -41,7 +41,7 @@ Bentobox takes the excellent foundation of Omakub and refines it for professiona
 | **Databases** | MySQL/Redis/PostgreSQL | Removed (use containers as needed) |
 | **AI Ready** | No | Yes (OpenWebUI + Ollama) |
 | **Remote Access** | No | Yes (Tailscale built-in) |
-| **KVM Sharing** | No | Yes (Barrier/Synergy) |
+| **KVM Sharing** | No | Yes (Barrier) |
 | **Entertainment** | Games, music apps | Removed for focus |
 
 ### Removed Applications
@@ -314,9 +314,9 @@ gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/shar
 
 Additional documentation available in the repository:
 
-- `TESTING_GUIDE.md` - Complete testing procedures
 - `wallpaper/LICENSE.md` - Wallpaper licensing and credits
 - `wallpaper/README.md` - Wallpaper usage guide
+- `LICENSE_INFO.md` - Project licensing information
 
 ---
 
