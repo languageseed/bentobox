@@ -1,0 +1,5 @@
+
+# Admin scripts (kept separate, not for public repo)
+*-admin-scripts/
+setup-storage-pool.sh
+performance-tuning*.sh
