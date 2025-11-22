@@ -11,15 +11,16 @@ ascii_art='________                  __        ___.
 '
 
 echo -e "$ascii_art"
-echo "=> Omakub is for fresh Ubuntu 24.04+ installations only!"
+echo "=> Bentobox is for fresh Ubuntu 24.04+ installations only!"
+echo "=> Custom fork by languageseed - Professional development environment"
 echo -e "\nBegin installation (or abort with ctrl+c)..."
 
 sudo apt-get update >/dev/null
 sudo apt-get install -y git >/dev/null
 
-echo "Cloning Omakub..."
+echo "Cloning Bentobox..."
 rm -rf ~/.local/share/omakub
-git clone https://github.com/basecamp/omakub.git ~/.local/share/omakub >/dev/null
+git clone https://github.com/languageseed/bentobox.git ~/.local/share/omakub >/dev/null
 if [[ $OMAKUB_REF != "master" ]]; then
 	cd ~/.local/share/omakub
 	git fetch origin "${OMAKUB_REF:-stable}" && git checkout "${OMAKUB_REF:-stable}"
