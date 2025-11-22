@@ -56,7 +56,6 @@ To maintain focus on development, we removed:
 ### Added Applications
 
 - **Barrier** - Free, open-source KVM (keyboard/video/mouse) sharing
-- **Synergy** - Commercial KVM software (requires license)
 - **Tailscale** - Zero-config VPN for secure remote access
 
 ### Container-First Approach
@@ -113,7 +112,6 @@ Instead of database containers (MySQL, Redis, PostgreSQL), Bentobox deploys:
 During installation, select from:
 - **1Password** - Password manager
 - **Barrier** - Free KVM sharing
-- **Synergy** - Commercial KVM
 - **Tailscale** - VPN for remote access
 
 **Programming Languages:**
@@ -172,7 +170,6 @@ The installer will prompt you to choose:
 **Optional Apps** (select what you need):
 - 1Password
 - Barrier
-- Synergy
 - Tailscale
 
 **Programming Languages** (select your stack):
