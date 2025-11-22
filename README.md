@@ -271,6 +271,18 @@ Bentobox is built to be customizable. You can:
 
 **Note**: Ulauncher is optional. Ubuntu has built-in app search (press `Super` key). You can safely remove Ulauncher without affecting other functionality.
 
+#### GDM Login Screen Background
+
+**Symptom**: Lock screen shows custom wallpaper, but GDM login screen (first boot/logout) shows default Ubuntu background.
+
+**Why**: Ubuntu 24.04 uses compiled gresource files for GDM themes, making background customization complex. The dconf settings apply to lock screen but not the GDM greeter.
+
+**Impact**: Minor cosmetic issue - lock screen and desktop wallpaper work correctly, only the initial login screen differs.
+
+**Status**: Known limitation. We're working on a solution for Ubuntu 24.04's new GDM structure.
+
+**Workaround**: Manually set using third-party tools after installation, or accept that login screen differs from desktop wallpaper.
+
 ---
 
 ### Installation Issues
