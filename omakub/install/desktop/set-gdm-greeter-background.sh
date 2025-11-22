@@ -2,6 +2,7 @@
 
 # Set GDM3 Login Greeter Background (not just lock screen)
 # This modifies the actual GDM theme to show custom wallpaper
+# Works with any user account that has sudo privileges
 
 echo "Setting GDM3 login greeter background..."
 
@@ -14,9 +15,9 @@ if [ ! -f "$WALLPAPER_SOURCE" ]; then
 fi
 
 # Copy wallpaper to system location
-echo 'labadmin' | sudo -S mkdir -p /usr/share/backgrounds/bentobox
-echo 'labadmin' | sudo -S cp "$WALLPAPER_SOURCE" /usr/share/backgrounds/bentobox/gdm-background.jpg
-echo 'labadmin' | sudo -S chmod 644 /usr/share/backgrounds/bentobox/gdm-background.jpg
+sudo mkdir -p /usr/share/backgrounds/bentobox
+sudo cp "$WALLPAPER_SOURCE" /usr/share/backgrounds/bentobox/gdm-background.jpg
+sudo chmod 644 /usr/share/backgrounds/bentobox/gdm-background.jpg
 
 # Method 1: Extract and modify GDM theme
 GDM_THEME_DIR="/usr/share/gnome-shell/theme"
@@ -25,11 +26,11 @@ GDM_THEME_FILE="$GDM_THEME_DIR/ubuntu.css"
 if [ -f "$GDM_THEME_FILE" ]; then
     # Backup original if not already backed up
     if [ ! -f "$GDM_THEME_FILE.bak" ]; then
-        echo 'labadmin' | sudo -S cp "$GDM_THEME_FILE" "$GDM_THEME_FILE.bak"
+        sudo cp "$GDM_THEME_FILE" "$GDM_THEME_FILE.bak"
     fi
     
     # Add/modify background in CSS
-    echo 'labadmin' | sudo -S tee "$GDM_THEME_FILE" > /dev/null << 'EOF'
+    sudo tee "$GDM_THEME_FILE" > /dev/null << 'EOF'
 #lockDialogGroup {
   background: url(file:///usr/share/backgrounds/bentobox/gdm-background.jpg);
   background-size: cover;
@@ -48,13 +49,14 @@ EOF
 fi
 
 # Method 2: Use alternatives system
-echo 'labadmin' | sudo -S update-alternatives --install /usr/share/backgrounds/gdm-background /usr/share/backgrounds/gdm-background /usr/share/backgrounds/bentobox/gdm-background.jpg 100 || true
+sudo update-alternatives --install /usr/share/backgrounds/gdm-background /usr/share/backgrounds/gdm-background /usr/share/backgrounds/bentobox/gdm-background.jpg 100 || true
 
-# Method 3: Create GDM AccountsService background
-echo 'labadmin' | sudo -S mkdir -p /var/lib/AccountsService/users
-if [ -f "/var/lib/AccountsService/users/labadmin" ]; then
-    if ! grep -q "Background=" "/var/lib/AccountsService/users/labadmin"; then
-        echo 'labadmin' | sudo -S tee -a /var/lib/AccountsService/users/labadmin > /dev/null << EOF
+# Method 3: Create GDM AccountsService background for current user
+sudo mkdir -p /var/lib/AccountsService/users
+CURRENT_USER_FILE="/var/lib/AccountsService/users/$USER"
+if [ -f "$CURRENT_USER_FILE" ]; then
+    if ! grep -q "Background=" "$CURRENT_USER_FILE"; then
+        sudo tee -a "$CURRENT_USER_FILE" > /dev/null << EOF
 
 [User]
 Background=/usr/share/backgrounds/bentobox/gdm-background.jpg
@@ -70,4 +72,3 @@ echo "  sudo systemctl restart gdm3"
 echo ""
 echo "Or reboot the system:"
 echo "  sudo reboot"
-
