@@ -9,7 +9,7 @@ Bentobox is a custom fork of [Omakub](https://github.com/basecamp/omakub) by DHH
 Transform a fresh Ubuntu 24.04+ installation into a fully-configured development environment with a single command:
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot-v2.sh | bash
+wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
 ```
 
 That's it! The installation will guide you through selecting your preferred tools.
@@ -168,7 +168,7 @@ Start with a clean Ubuntu 24.04+ installation (desktop environment).
 ### 2. Run Installation Command
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot-v2.sh | bash
+wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
 ```
 
 ### 3. Make Your Selections
@@ -425,7 +425,7 @@ The name "Bentobox" reflects our philosophy: a carefully curated selection of to
 **Ready to get started?**
 
 ```bash
-wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot-v2.sh | bash
+wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
 ```
 
 Enjoy your perfectly curated Ubuntu development environment! 🎉
