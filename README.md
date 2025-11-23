@@ -23,6 +23,7 @@ Bentobox takes the excellent foundation of Omakub and refines it for professiona
 - 🐳 **Modern Container Management** - Portainer web UI instead of CLI tools
 - 🤖 **Local AI Development** - OpenWebUI + Ollama for running LLMs locally
 - 🌐 **Secure Remote Access** - Tailscale VPN for accessing your dev environment anywhere
+- 🪟 **Windows App Integration** - WinBoat for running Windows apps seamlessly on Linux
 - 🖱️ **Multi-Computer Workflows** - Barrier/Synergy for KVM sharing across machines
 - 🎨 **Beautiful Wallpapers** - 7 curated Pexels wallpapers included
 - 🎯 **Focused Tool Selection** - Streamlined to essential development tools
@@ -36,12 +37,13 @@ Bentobox takes the excellent foundation of Omakub and refines it for professiona
 | Feature | Omakub | Bentobox |
 |---------|---------|----------|
 | **Focus** | General purpose | Professional development |
-| **Optional Apps** | 10+ choices | 4 focused choices |
+| **Optional Apps** | 10+ choices | 6 focused choices |
 | **Container UI** | lazydocker (CLI) | Portainer (Web UI) |
 | **Databases** | MySQL/Redis/PostgreSQL | Removed (use containers as needed) |
 | **AI Ready** | No | Yes (OpenWebUI + Ollama) |
 | **Remote Access** | No | Yes (Tailscale built-in) |
 | **KVM Sharing** | No | Yes (Barrier/Synergy) |
+| **Windows Apps** | No | Yes (WinBoat - run Windows apps seamlessly) |
 | **Entertainment** | Games, music apps | Removed for focus |
 
 ### Removed Applications
@@ -57,6 +59,8 @@ To maintain focus on development, we removed:
 
 - **Barrier** - Free, open-source KVM (keyboard/video/mouse) sharing
 - **Tailscale** - Zero-config VPN for secure remote access
+- **WinBoat** - Run Windows applications seamlessly on Linux (optional)
+- **Sublime Text** - Fast, lightweight code editor with Package Control (optional)
 
 ### Container-First Approach
 
@@ -113,6 +117,9 @@ During installation, select from:
 - **1Password** - Password manager
 - **Barrier** - Free KVM sharing
 - **Tailscale** - VPN for remote access
+- **WinBoat** - Run Windows apps seamlessly (includes virt-manager, Docker, KVM)
+- **Sublime Text** - Fast, lightweight code editor
+- **Windows 10 ISO** - Pre-download Windows 10 for VM installations (~5.8 GB)
 
 **Programming Languages:**
 - Ruby on Rails
@@ -145,9 +152,10 @@ See `wallpaper/LICENSE.md` for full photographer credits and licensing details.
 ## 💻 System Requirements
 
 - **OS**: Ubuntu 24.04+ (fresh installation recommended)
-- **RAM**: 8GB minimum, 16GB recommended
-- **Disk**: 30GB minimum, 50GB+ recommended (for AI models)
+- **RAM**: 8GB minimum, 16GB recommended (20GB+ if using WinBoat)
+- **Disk**: 30GB minimum, 50GB+ recommended (80GB+ if using WinBoat with Windows)
 - **Network**: Internet connection required for installation
+- **CPU**: Virtualization support (Intel VT-x/AMD-V) required for WinBoat
 
 ---
 
@@ -171,6 +179,9 @@ The installer will prompt you to choose:
 - 1Password
 - Barrier
 - Tailscale
+- WinBoat (Windows app integration)
+- Sublime Text (code editor)
+- Windows 10 ISO download
 
 **Programming Languages** (select your stack):
 - Ruby on Rails, Node.js, Python, Go, etc.
@@ -234,6 +245,32 @@ tailscale ip
 2. Choose Server (computer with keyboard/mouse) or Client
 3. Configure screen layout
 4. Works great with Tailscale for remote KVM!
+
+### Set Up WinBoat (if installed)
+
+WinBoat lets you run Windows applications seamlessly on Linux - like "reverse WSL":
+
+```bash
+# Launch WinBoat GUI
+winboat
+# or from applications menu: search "WinBoat"
+```
+
+**First-Time Setup:**
+1. WinBoat will automatically install Windows 10 (takes 20-30 min)
+2. Once complete, the Guest API will show "Online"
+3. Install your Windows apps and they'll appear in the WinBoat interface
+4. Launch Windows apps directly - they integrate with your Linux desktop!
+
+**Features:**
+- Seamless filesystem integration (access Linux files from Windows)
+- USB device passthrough
+- Shared clipboard
+- Native Linux window management for Windows apps
+
+**Optional:** If you pre-downloaded the Windows 10 ISO, you can configure WinBoat to use it instead of downloading Windows again. See WinBoat settings.
+
+**Tip:** Use virt-manager (installed with WinBoat) to manage the underlying Windows VM if needed.
 
 ---
 
@@ -328,6 +365,7 @@ Additional documentation available in the repository:
 - `TESTING_GUIDE.md` - Complete testing procedures
 - `wallpaper/LICENSE.md` - Wallpaper licensing and credits
 - `wallpaper/README.md` - Wallpaper usage guide
+- `testing/winboat/` - WinBoat testing documentation and guides
 
 ---
 
