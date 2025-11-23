@@ -5,6 +5,7 @@
 echo "Installing WinBoat (Run Windows apps on Linux)..."
 
 # Install prerequisites
+echo "  → Installing prerequisites (Docker, KVM, libvirt, virt-manager)..."
 sudo apt-get update -qq
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
     docker.io \
@@ -16,7 +17,7 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
     virt-manager \
     qemu-system-x86 \
     libfuse2 \
-    freerdp3-x11 >/dev/null 2>&1
+    freerdp3-x11
 
 # Enable services
 sudo systemctl enable --now docker
@@ -29,6 +30,7 @@ sudo usermod -aG kvm ${USER}
 sudo usermod -aG libvirt ${USER}
 
 # Download WinBoat AppImage
+echo "  → Downloading WinBoat AppImage..."
 mkdir -p ~/.local/bin
 WINBOAT_VERSION="v0.8.7"
 wget -q --show-progress -O ~/.local/bin/winboat \
