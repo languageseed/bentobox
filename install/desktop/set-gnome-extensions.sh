@@ -9,12 +9,8 @@ gnome-extensions disable ubuntu-appindicators@ubuntu.com
 gnome-extensions disable ubuntu-dock@ubuntu.com
 gnome-extensions disable ding@rastersoft.com
 
-# Pause to assure user is ready to accept confirmations (only in interactive mode)
-if [ -t 0 ] && [ -t 1 ]; then
-  gum confirm "To install Gnome extensions, you need to accept some confirmations. Ready?"
-else
-  echo "🤖 Non-interactive mode - proceeding with Gnome extensions"
-fi
+# Pause to assure user is ready to accept confirmations
+gum confirm "To install Gnome extensions, you need to accept some confirmations. Ready?" || echo "Proceeding..."
 
 # Install new extensions
 gext install tactile@lundal.io
