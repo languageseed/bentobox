@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run desktop installers
-for installer in ~/.local/share/omakub/install/desktop/*.sh; do source $installer; done
+for installer in $OMAKUB_PATH/install/desktop/*.sh; do source $installer; done
 
 # Logout to pickup changes (only prompt in interactive mode)
 if [ -t 0 ] && [ -t 1 ]; then
