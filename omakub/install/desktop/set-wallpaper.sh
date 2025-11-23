@@ -26,13 +26,16 @@ if [ -d "$WALLPAPER_SOURCE_DIR" ]; then
             ls -lh "$WALLPAPER_DEST_DIR"/*.jpg
         else
             echo "❌ ERROR: Failed to copy wallpapers!"
-            exit 1
+            echo "⚠️  Continuing installation without custom wallpapers..."
+            exit 0
         fi
     else
         echo "❌ ERROR: No wallpaper files (.jpg) found in $WALLPAPER_SOURCE_DIR"
         echo "   Directory contents:"
         ls -la "$WALLPAPER_SOURCE_DIR/"
-        exit 1
+        echo ""
+        echo "⚠️  Continuing installation without custom wallpapers..."
+        exit 0
     fi
 else
     echo "❌ ERROR: Wallpaper source directory not found!"
@@ -42,7 +45,9 @@ else
     echo ""
     echo "   This usually means the Bentobox installation is incomplete."
     echo "   The repository should have been cloned to ~/.local/share/omakub"
-    exit 1
+    echo ""
+    echo "⚠️  Continuing installation without custom wallpapers..."
+    exit 0
 fi
 
 # Set default wallpaper
@@ -61,7 +66,9 @@ else
     echo "   Expected: $DEFAULT_WALLPAPER"
     echo "   Destination directory contents:"
     ls -la "$WALLPAPER_DEST_DIR/" 2>/dev/null || echo "   (directory is empty or doesn't exist)"
-    exit 1
+    echo ""
+    echo "⚠️  Continuing installation without custom wallpapers..."
+    exit 0
 fi
 
 echo ""
