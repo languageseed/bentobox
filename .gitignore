@@ -3,3 +3,19 @@
 *-admin-scripts/
 setup-storage-pool.sh
 performance-tuning*.sh
+
+# Local testing/development files
+boot-local.sh
+commit.sh
+push-to-github.sh
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

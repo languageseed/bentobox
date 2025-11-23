@@ -10,9 +10,9 @@ ________                     __        __
 '
 
 echo -e "$ascii_art"
-echo "=> Bentobox v2.0 (Build f369fb2) - Nov 23, 2025"
+echo "=> Bentobox - Professional Ubuntu development environment"
 echo "=> Fresh Ubuntu 24.04+ installations only"
-echo "=> Custom fork by languageseed - Professional development environment"
+echo "=> Fork of Omakub by languageseed"
 echo -e "\nBegin installation (or abort with ctrl+c)..."
 
 sudo apt-get update >/dev/null

@@ -4,12 +4,10 @@
 
 echo "Installing WinBoat (Run Windows apps on Linux)..."
 
-# Install prerequisites
-echo "  → Installing prerequisites (Docker, KVM, libvirt, virt-manager)..."
+# Install prerequisites (Docker is already installed via terminal/docker.sh)
+echo "  → Installing prerequisites (KVM, libvirt, virt-manager)..."
 sudo apt-get update -qq
 sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    docker.io \
-    docker-compose \
     qemu-kvm \
     libvirt-daemon-system \
     libvirt-clients \
@@ -20,12 +18,10 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get install -y \
     freerdp3-x11
 
 # Enable services
-sudo systemctl enable --now docker
 sudo systemctl enable --now libvirtd
 sudo systemctl start virtlogd 2>/dev/null || true
 
-# Add user to required groups
-sudo usermod -aG docker ${USER}
+# Add user to required groups (docker group already added by docker.sh)
 sudo usermod -aG kvm ${USER}
 sudo usermod -aG libvirt ${USER}
 
