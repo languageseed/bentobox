@@ -4,8 +4,7 @@
 source ~/.local/share/omakub/themes/tokyo-night/gnome.sh
 source ~/.local/share/omakub/themes/tokyo-night/tophat.sh
 
-# Override with custom wallpaper
-source ~/.local/share/omakub/install/desktop/set-wallpaper.sh
-
-# Set GDM (login screen) background to match
-source ~/.local/share/omakub/install/desktop/z-set-gdm-background.sh
+# Note: Wallpaper and GDM background are set by separate scripts:
+# - set-wallpaper.sh (runs after this script alphabetically)
+# - z-set-gdm-background.sh (runs after wallpaper setup)
+# - z-set-gdm-greeter-background.sh (runs after wallpaper setup)
