@@ -21,19 +21,19 @@ if [ ! -d "$HOME/.config/nvim" ]; then
 
   # Make everything match the terminal transparency
   mkdir -p ~/.config/nvim/plugin/after
-  cp ~/.local/share/omakub/configs/neovim/transparency.lua ~/.config/nvim/plugin/after/
+  cp ~/.local/share/omakub/configs/neovim/transparency.lua ~/.config/nvim/plugin/after/ 2>/dev/null || echo "⚠️  Skipping neovim transparency config"
 
   # Default to Tokyo Night theme
-  cp ~/.local/share/omakub/themes/tokyo-night/neovim.lua ~/.config/nvim/lua/plugins/theme.lua
+  cp ~/.local/share/omakub/themes/tokyo-night/neovim.lua ~/.config/nvim/lua/plugins/theme.lua 2>/dev/null || echo "⚠️  Skipping neovim theme"
 
   # Turn off animated scrolling
-  cp ~/.local/share/omakub/configs/neovim/snacks-animated-scrolling-off.lua ~/.config/nvim/lua/plugins/
+  cp ~/.local/share/omakub/configs/neovim/snacks-animated-scrolling-off.lua ~/.config/nvim/lua/plugins/ 2>/dev/null || echo "⚠️  Skipping neovim scrolling config"
 
   # Turn off relative line numbers
   echo "vim.opt.relativenumber = false" >>~/.config/nvim/lua/config/options.lua
 
   # Ensure editor.neo-tree is used by default
-  cp ~/.local/share/omakub/configs/neovim/lazyvim.json ~/.config/nvim/
+  cp ~/.local/share/omakub/configs/neovim/lazyvim.json ~/.config/nvim/ 2>/dev/null || echo "⚠️  Skipping neovim lazyvim config"
 fi
 
 # Replace desktop launcher with one running inside Alacritty
