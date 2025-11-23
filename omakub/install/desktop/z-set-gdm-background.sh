@@ -5,8 +5,8 @@
 
 echo "Setting GDM login screen background..."
 
-# The wallpaper we want to use
-WALLPAPER_SOURCE="$HOME/.local/share/backgrounds/omakub/pexels-pok-rie-33563-2049422.jpg"
+# The wallpaper we want to use - directly from the repository
+WALLPAPER_SOURCE="$HOME/.local/share/omakub/wallpaper/pexels-pok-rie-33563-2049422.jpg"
 
 # Check if wallpaper exists
 if [ ! -f "$WALLPAPER_SOURCE" ]; then

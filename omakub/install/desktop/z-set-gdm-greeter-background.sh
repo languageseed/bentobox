@@ -6,7 +6,8 @@
 
 echo "Setting GDM3 login greeter background..."
 
-WALLPAPER_SOURCE="$HOME/.local/share/backgrounds/omakub/pexels-pok-rie-33563-2049422.jpg"
+# Use wallpaper directly from repository
+WALLPAPER_SOURCE="$HOME/.local/share/omakub/wallpaper/pexels-pok-rie-33563-2049422.jpg"
 
 # Check if wallpaper exists
 if [ ! -f "$WALLPAPER_SOURCE" ]; then
