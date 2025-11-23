@@ -8,4 +8,4 @@ source ~/.local/share/omakub/themes/tokyo-night/tophat.sh
 source ~/.local/share/omakub/install/desktop/set-wallpaper.sh
 
 # Set GDM (login screen) background to match
-source ~/.local/share/omakub/install/desktop/set-gdm-background.sh
+source ~/.local/share/omakub/install/desktop/z-set-gdm-background.sh
