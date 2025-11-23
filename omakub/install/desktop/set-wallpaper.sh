@@ -10,8 +10,8 @@ WALLPAPER_DEST_DIR="$HOME/.local/share/backgrounds/omakub"
 mkdir -p "$WALLPAPER_DEST_DIR"
 
 # Copy all wallpapers from omakub installation
-# The wallpapers are in omakub/wallpaper/ within the cloned repo
-WALLPAPER_SOURCE_DIR="$HOME/.local/share/omakub/omakub/wallpaper"
+# The wallpapers are in wallpaper/ within the cloned repo
+WALLPAPER_SOURCE_DIR="$HOME/.local/share/omakub/wallpaper"
 
 if [ -d "$WALLPAPER_SOURCE_DIR" ]; then
     echo "📁 Source directory found: $WALLPAPER_SOURCE_DIR"
