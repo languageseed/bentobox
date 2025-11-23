@@ -6,8 +6,12 @@
 
 echo "Setting GDM3 login greeter background..."
 
+# Get the actual user (not root when using sudo)
+ACTUAL_USER="${SUDO_USER:-$USER}"
+ACTUAL_HOME=$(eval echo ~$ACTUAL_USER)
+
 # Use wallpaper directly from repository
-WALLPAPER_SOURCE="$HOME/.local/share/omakub/wallpaper/pexels-pok-rie-33563-2049422.jpg"
+WALLPAPER_SOURCE="$ACTUAL_HOME/.local/share/omakub/wallpaper/pexels-pok-rie-33563-2049422.jpg"
 
 # Check if wallpaper exists
 if [ ! -f "$WALLPAPER_SOURCE" ]; then
