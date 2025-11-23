@@ -9,9 +9,12 @@ gnome-extensions disable ubuntu-appindicators@ubuntu.com
 gnome-extensions disable ubuntu-dock@ubuntu.com
 gnome-extensions disable ding@rastersoft.com
 
-# Pause to assure user is ready to accept confirmations
-# DISABLED: gum confirm hangs without TTY
-# gum confirm "To install Gnome extensions, you need to accept some confirmations. Ready?"
+# Pause to assure user is ready to accept confirmations (only in interactive mode)
+if [ -t 0 ] && [ -t 1 ]; then
+  gum confirm "To install Gnome extensions, you need to accept some confirmations. Ready?"
+else
+  echo "🤖 Non-interactive mode - proceeding with Gnome extensions"
+fi
 
 # Install new extensions
 gext install tactile@lundal.io
