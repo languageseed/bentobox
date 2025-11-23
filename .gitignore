@@ -9,6 +9,28 @@ boot-local.sh
 commit.sh
 push-to-github.sh
 
+# Machine-specific fixes (not for public deployment)
+*leaf*.sh
+*leaf*.md
+LEAF_*
+*debug*.sh
+*diagnostic*.sh
+check-wallpapers-on-leaf.sh
+debug-wallpaper-issue.sh
+diagnostic-wallpaper.sh
+
+# Internal development documentation
+CUSTOMIZATION_SUMMARY.md
+FINAL_CUSTOMIZATION_SUMMARY.md
+OMAKUB_REVIEW_AND_CUSTOMIZATION_GUIDE.md
+PRE_DEPLOYMENT_REVIEW.md
+READY_TO_DEPLOY.md
+WALLPAPER_CUSTOMIZATION.md
+OMAKUB_COMPLETE_PACKAGE_LIST.md
+LIBVIRT_GUESTS_SHUTDOWN_ERROR.md
+DEPLOYMENT_ISSUES_REPORT.md
+FIX_SUMMARY.md
+
 # IDE and editor files
 .vscode/
 .idea/
