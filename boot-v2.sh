@@ -12,7 +12,7 @@ ________                     __        __
 '
 
 echo -e "$ascii_art"
-echo "=> Bentobox v2.0 (Build 1f07848-FINAL) - Nov 23, 2025"
+echo "=> Bentobox v2.0 (Build 265ab9a) - Nov 23, 2025"
 echo "=> Fresh Ubuntu 24.04+ installations only"
 echo "=> Custom fork by languageseed - Professional development environment"
 echo -e "\nBegin installation (or abort with ctrl+c)..."
