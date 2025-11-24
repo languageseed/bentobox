@@ -1407,7 +1407,7 @@ class BentoboxGUI:
         confirm.format_secondary_text(
             "This will:\n"
             "• Download and install fonts (Cascadia Mono, iA Writer)\n"
-            "• Apply Tokyo Night GNOME theme\n"
+            "• Apply selected GNOME theme\n"
             "• Set wallpaper\n"
             "• Configure GNOME settings\n\n"
             "Continue?"
@@ -1419,6 +1419,14 @@ class BentoboxGUI:
         if response != Gtk.ResponseType.YES:
             return
         
+        # Switch to Install tab
+        GLib.idle_add(self.notebook.set_current_page, 5)
+        
+        # Clear terminal and add header
+        GLib.idle_add(self.clear_terminal)
+        GLib.idle_add(self.append_to_terminal, "🎨 Applying Themes & Fonts\n")
+        GLib.idle_add(self.append_to_terminal, "=" * 50 + "\n\n")
+        
         # Run in thread
         thread = threading.Thread(target=self.apply_themes_worker)
         thread.daemon = True
@@ -1428,45 +1436,94 @@ class BentoboxGUI:
         """Apply themes in background"""
         try:
             # Install fonts
+            GLib.idle_add(self.append_to_terminal, "📝 Installing fonts...\n")
             fonts_script = self.omakub_path / 'install/desktop/fonts.sh'
             if fonts_script.exists():
-                subprocess.run(['bash', str(fonts_script)], timeout=300, check=True)
+                result = subprocess.run(
+                    ['bash', str(fonts_script)],
+                    capture_output=True,
+                    text=True,
+                    timeout=300
+                )
+                GLib.idle_add(self.append_to_terminal, result.stdout)
+                if result.stderr:
+                    GLib.idle_add(self.append_to_terminal, result.stderr)
+                GLib.idle_add(self.append_to_terminal, "✅ Fonts installed\n\n")
+            
+            # Configure fonts
+            GLib.idle_add(self.append_to_terminal, "⚙️  Configuring terminal fonts...\n")
+            configure_script = self.omakub_path / 'install/desktop/configure-fonts.sh'
+            if configure_script.exists():
+                result = subprocess.run(
+                    ['bash', str(configure_script)],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                GLib.idle_add(self.append_to_terminal, result.stdout)
+                if result.stderr:
+                    GLib.idle_add(self.append_to_terminal, result.stderr)
+                GLib.idle_add(self.append_to_terminal, "✅ Font configuration complete\n\n")
             
             # Apply theme
+            GLib.idle_add(self.append_to_terminal, "🎨 Applying GNOME theme...\n")
             theme_script = self.omakub_path / 'install/desktop/set-gnome-theme.sh'
             if theme_script.exists():
-                subprocess.run(
+                result = subprocess.run(
                     ['bash', str(theme_script)],
                     env={**os.environ, 'OMAKUB_PATH': str(self.omakub_path)},
-                    timeout=60,
-                    check=True
+                    capture_output=True,
+                    text=True,
+                    timeout=60
                 )
+                GLib.idle_add(self.append_to_terminal, result.stdout)
+                if result.stderr:
+                    GLib.idle_add(self.append_to_terminal, result.stderr)
+                GLib.idle_add(self.append_to_terminal, "✅ Theme applied\n\n")
             
             # Apply settings
+            GLib.idle_add(self.append_to_terminal, "⚙️  Applying GNOME settings...\n")
             settings_script = self.omakub_path / 'install/desktop/set-gnome-settings.sh'
             if settings_script.exists():
-                subprocess.run(['bash', str(settings_script)], timeout=60, check=True)
+                result = subprocess.run(
+                    ['bash', str(settings_script)],
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                GLib.idle_add(self.append_to_terminal, result.stdout)
+                if result.stderr:
+                    GLib.idle_add(self.append_to_terminal, result.stderr)
+                GLib.idle_add(self.append_to_terminal, "✅ GNOME settings applied\n\n")
             
+            # Set wallpaper
+            GLib.idle_add(self.append_to_terminal, "🖼️  Setting wallpaper...\n")
+            wallpaper_script = self.omakub_path / 'install/desktop/set-wallpaper.sh'
+            if wallpaper_script.exists():
+                result = subprocess.run(
+                    ['bash', str(wallpaper_script)],
+                    env={**os.environ, 'OMAKUB_PATH': str(self.omakub_path)},
+                    capture_output=True,
+                    text=True,
+                    timeout=60
+                )
+                GLib.idle_add(self.append_to_terminal, result.stdout)
+                if result.stderr:
+                    GLib.idle_add(self.append_to_terminal, result.stderr)
+                GLib.idle_add(self.append_to_terminal, "✅ Wallpaper set\n\n")
+            
+            GLib.idle_add(self.append_to_terminal, "\n🎉 All customizations applied!\n")
+            GLib.idle_add(self.append_to_terminal, "=" * 50 + "\n")
             GLib.idle_add(self.on_themes_complete)
             
         except Exception as e:
+            GLib.idle_add(self.append_to_terminal, f"\n❌ Error: {str(e)}\n")
             GLib.idle_add(self.on_themes_error, str(e))
     
     def on_themes_complete(self):
         """Handle themes completion"""
-        dialog = Gtk.MessageDialog(
-            transient_for=self.window,
-            flags=0,
-            message_type=Gtk.MessageType.INFO,
-            buttons=Gtk.ButtonsType.OK,
-            text="Themes & Fonts Applied!"
-        )
-        dialog.format_secondary_text(
-            "Desktop customization complete.\n\n"
-            "Log out and back in for all changes to take effect."
-        )
-        dialog.run()
-        dialog.destroy()
+        # Just add completion message to terminal - no popup
+        self.append_to_terminal("\n💡 Log out and back in for all changes to take effect.\n")
     
     def on_themes_error(self, error_msg):
         """Handle themes error"""
