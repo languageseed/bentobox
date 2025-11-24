@@ -682,6 +682,24 @@ class BentoboxGUI:
         self.gnome_extensions_cb.set_active(self.config.get('desktop', {}).get('install_extensions', True))
         gnome_box.pack_start(self.gnome_extensions_cb, False, False, 0)
         
+        # Extension list (shown when checkbox is checked)
+        extensions_info = Gtk.Label()
+        extensions_info.set_markup(
+            "<small><i>Extensions to be installed:</i>\n"
+            "• <b>Tactile</b> - Advanced window tiling\n"
+            "• <b>Just Perfection</b> - Customize GNOME Shell\n"
+            "• <b>Blur My Shell</b> - Beautiful blur effects\n"
+            "• <b>Space Bar</b> - Workspace indicator\n"
+            "• <b>Undecorate</b> - Remove window decorations\n"
+            "• <b>TopHat</b> - System resource monitor in top bar\n"
+            "• <b>Alphabetical App Grid</b> - Sort applications alphabetically</small>"
+        )
+        extensions_info.set_halign(Gtk.Align.START)
+        extensions_info.set_margin_start(40)
+        extensions_info.set_margin_top(5)
+        extensions_info.set_line_wrap(True)
+        gnome_box.pack_start(extensions_info, False, False, 0)
+        
         # === QUICK ACTIONS ===
         actions_label = Gtk.Label()
         actions_label.set_markup("<b>🚀 Quick Actions</b>")
