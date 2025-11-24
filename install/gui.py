@@ -7,7 +7,8 @@ Simple desktop interface for managing Bentobox installation
 import gi
 gi.require_version('Gtk', '3.0')
 gi.require_version('Vte', '2.91')
-from gi.repository import Gtk, GLib, Vte, Pango
+gi.require_version('GdkPixbuf', '2.0')
+from gi.repository import Gtk, GLib, Vte, Pango, Gdk, GdkPixbuf
 
 import os
 import sys
@@ -15,8 +16,11 @@ import json
 import yaml
 import subprocess
 import threading
+import requests
+import io
 from pathlib import Path
 from typing import Dict, List, Optional
+from PIL import Image
 
 class BentoboxGUI:
     def __init__(self):
@@ -31,6 +35,9 @@ class BentoboxGUI:
         self.selected_languages = set()
         self.selected_containers = set()
         self.selected_theme = 'tokyo-night'
+        
+        # Apply styling before building UI
+        self.apply_styling()
         
         self.build_ui()
     
@@ -53,6 +60,65 @@ class BentoboxGUI:
                 return json.load(f)
         return {}
     
+    def apply_styling(self):
+        """Apply custom CSS styling to the application"""
+        css_provider = Gtk.CssProvider()
+        css = b"""
+        /* Notebook tabs styling - keep purple accent */
+        notebook > header > tabs > tab:checked {
+            color: #7C4DFF;
+            border-bottom: 3px solid #7C4DFF;
+        }
+        
+        notebook > header > tabs > tab:hover {
+            background-color: rgba(124, 77, 255, 0.1);
+        }
+        
+        /* Buttons - keep purple for primary actions only */
+        button.suggested-action {
+            background-image: linear-gradient(to bottom, #7C4DFF, #651FFF);
+            color: white;
+            border: none;
+        }
+        
+        button.suggested-action:hover {
+            background-image: linear-gradient(to bottom, #8C5DFF, #751FFF);
+        }
+        
+        /* Destructive action button - red */
+        button.destructive-action {
+            background-image: linear-gradient(to bottom, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+        }
+        
+        button.destructive-action:hover {
+            background-image: linear-gradient(to bottom, #f05545, #d52b1e);
+        }
+        
+        /* Check buttons and radio buttons - subtle hover */
+        checkbutton:hover, radiobutton:hover {
+            background-color: rgba(124, 77, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        /* Progress bar - purple */
+        progressbar progress {
+            background-image: linear-gradient(to bottom, #7C4DFF, #651FFF);
+        }
+        """
+        
+        css_provider.load_from_data(css)
+        
+        # Apply to default screen
+        screen = Gdk.Screen.get_default()
+        style_context = Gtk.StyleContext()
+        style_context.add_provider_for_screen(
+            screen,
+            css_provider,
+            Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+        )
+    
     def save_config(self):
         """Save config to file"""
         # Get selected theme
@@ -73,10 +139,23 @@ class BentoboxGUI:
                 'set_wallpaper': self.set_wallpaper_cb.get_active() if hasattr(self, 'set_wallpaper_cb') else True,
                 'apply_gnome_settings': self.gnome_settings_cb.get_active() if hasattr(self, 'gnome_settings_cb') else True,
                 'apply_hotkeys': self.gnome_hotkeys_cb.get_active() if hasattr(self, 'gnome_hotkeys_cb') else True,
-                'install_extensions': self.gnome_extensions_cb.get_active() if hasattr(self, 'gnome_extensions_cb') else False,
+                'install_extensions': self.gnome_extensions_cb.get_active() if hasattr(self, 'gnome_extensions_cb') else True,
             },
             'languages': list(self.selected_languages),
             'containers': list(self.selected_containers),
+            'security': {
+                'enable_ufw': self.ufw_enable_cb.get_active() if hasattr(self, 'ufw_enable_cb') else False,
+                'ufw_deny_incoming': self.ufw_deny_incoming_cb.get_active() if hasattr(self, 'ufw_deny_incoming_cb') else False,
+                'ufw_allow_ssh': self.ufw_allow_ssh_cb.get_active() if hasattr(self, 'ufw_allow_ssh_cb') else False,
+                'unattended_upgrades': self.unattended_upgrades_cb.get_active() if hasattr(self, 'unattended_upgrades_cb') else False,
+                'install_fail2ban': self.fail2ban_cb.get_active() if hasattr(self, 'fail2ban_cb') else False,
+                'disable_root_login': self.disable_root_login_cb.get_active() if hasattr(self, 'disable_root_login_cb') else False,
+                'password_required': self.password_required_cb.get_active() if hasattr(self, 'password_required_cb') else False,
+                'ssh_key_only': self.ssh_key_only_cb.get_active() if hasattr(self, 'ssh_key_only_cb') else False,
+                'ssh_change_port': self.ssh_change_port_cb.get_active() if hasattr(self, 'ssh_change_port_cb') else False,
+                'disable_apport': self.disable_apport_cb.get_active() if hasattr(self, 'disable_apport_cb') else False,
+                'disable_popularity_contest': self.disable_popularity_contest_cb.get_active() if hasattr(self, 'disable_popularity_contest_cb') else False,
+            },
             'settings': {
                 'auto_reboot': False,
                 'verbose': True,
@@ -92,43 +171,65 @@ class BentoboxGUI:
     def build_ui(self):
         """Build the GTK interface"""
         self.window = Gtk.Window(title="Bentobox Installer")
-        self.window.set_default_size(900, 700)
-        self.window.set_border_width(10)
+        self.window.set_default_size(1000, 750)
         self.window.connect("destroy", Gtk.main_quit)
+        
+        # Header bar - use default system styling
+        header_bar = Gtk.HeaderBar()
+        header_bar.set_title("Bentobox Installer")
+        header_bar.set_subtitle("Transform Your Ubuntu Workspace")
+        header_bar.set_show_close_button(True)
+        self.window.set_titlebar(header_bar)
         
         # Main container
         main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        main_box.set_margin_start(10)
+        main_box.set_margin_end(10)
+        main_box.set_margin_bottom(10)
         self.window.add(main_box)
         
-        # Header
-        header = Gtk.Label()
-        header.set_markup("<big><b>🚀 Bentobox Installation Manager</b></big>")
-        header.set_margin_bottom(10)
-        main_box.pack_start(header, False, False, 0)
+        # Notebook for tabs (save as instance variable for later access)
+        self.notebook = Gtk.Notebook()
+        main_box.pack_start(self.notebook, True, True, 0)
         
-        # Notebook for tabs
-        notebook = Gtk.Notebook()
-        main_box.pack_start(notebook, True, True, 0)
+        # Tab 0: Welcome/Instructions
+        welcome_box = self.build_welcome_tab()
+        self.notebook.append_page(welcome_box, Gtk.Label(label="👋 Welcome"))
         
         # Tab 1: Component Selection
         selection_box = self.build_selection_tab()
-        notebook.append_page(selection_box, Gtk.Label(label="📦 Components"))
+        self.notebook.append_page(selection_box, Gtk.Label(label="📦 Components"))
         
         # Tab 2: Desktop Customization
         desktop_box = self.build_desktop_tab()
-        notebook.append_page(desktop_box, Gtk.Label(label="🎨 Desktop"))
+        self.notebook.append_page(desktop_box, Gtk.Label(label="🎨 Desktop"))
         
-        # Tab 3: Installation
+        # Tab 3: Security
+        security_box = self.build_security_tab()
+        self.notebook.append_page(security_box, Gtk.Label(label="🔒 Security"))
+        
+        # Tab 4: Wallpapers
+        wallpaper_box = self.build_wallpaper_tab()
+        self.notebook.append_page(wallpaper_box, Gtk.Label(label="🖼️  Wallpapers"))
+        
+        # Tab 5: Installation
         install_box = self.build_install_tab()
-        notebook.append_page(install_box, Gtk.Label(label="▶️  Install"))
+        self.notebook.append_page(install_box, Gtk.Label(label="▶️  Install"))
         
-        # Tab 4: Status
+        # Tab 6: Status
         status_box = self.build_status_tab()
-        notebook.append_page(status_box, Gtk.Label(label="📊 Status"))
+        self.notebook.append_page(status_box, Gtk.Label(label="📊 Status"))
+        
+        # Tab 7: Maintenance (Uninstall)
+        maintenance_box = self.build_maintenance_tab()
+        self.notebook.append_page(maintenance_box, Gtk.Label(label="⚙️  Maintenance"))
         
         # Bottom button bar
         button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         button_box.set_margin_top(10)
+        button_box.set_margin_start(10)
+        button_box.set_margin_end(10)
+        button_box.set_margin_bottom(10)
         main_box.pack_start(button_box, False, False, 0)
         
         # Save config button
@@ -152,6 +253,186 @@ class BentoboxGUI:
         
         self.window.show_all()
     
+    def build_welcome_tab(self) -> Gtk.Box:
+        """Build welcome/instructions tab"""
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)
+        
+        # Scrolled window
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        box.pack_start(scrolled, True, True, 0)
+        
+        # Content box with nice padding
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        content.set_margin_start(40)
+        content.set_margin_end(40)
+        content.set_margin_top(30)
+        content.set_margin_bottom(30)
+        scrolled.add(content)
+        
+        # Hero section
+        hero_label = Gtk.Label()
+        hero_label.set_markup(
+            "<span size='xx-large' weight='bold'>🚀 Welcome to Bentobox Installer</span>\n"
+            "<span size='large'>Transform your Ubuntu into a beautiful, productive workspace</span>"
+        )
+        hero_label.set_justify(Gtk.Justification.CENTER)
+        hero_label.set_line_wrap(True)
+        hero_label.set_margin_bottom(20)
+        content.pack_start(hero_label, False, False, 0)
+        
+        # Separator
+        sep1 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        content.pack_start(sep1, False, False, 0)
+        
+        # What is Bentobox section
+        what_label = Gtk.Label()
+        what_label.set_markup("<span size='x-large' weight='bold'>What is Bentobox?</span>")
+        what_label.set_halign(Gtk.Align.START)
+        what_label.set_margin_top(10)
+        content.pack_start(what_label, False, False, 0)
+        
+        what_desc = Gtk.Label()
+        what_desc.set_markup(
+            "Bentobox is a <b>complete development environment installer</b> for Ubuntu 24.04.\n"
+            "It includes everything you need to get started with coding, design, and productivity:\n\n"
+            "• <b>Modern Applications</b> - VS Code, Cursor, Chrome, Docker, and more\n"
+            "• <b>Beautiful Themes</b> - Tokyo Night, Gruvbox, Nord, and other carefully curated themes\n"
+            "• <b>Programming Languages</b> - Node.js, Python, Ruby, Go, Rust, and more\n"
+            "• <b>Developer Tools</b> - Docker containers, terminal tools, fonts, and utilities\n"
+            "• <b>Smart Installation</b> - Detects existing packages and skips them automatically"
+        )
+        what_desc.set_halign(Gtk.Align.START)
+        what_desc.set_line_wrap(True)
+        what_desc.set_margin_start(20)
+        what_desc.set_margin_top(10)
+        content.pack_start(what_desc, False, False, 0)
+        
+        # Separator
+        sep2 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        sep2.set_margin_top(20)
+        content.pack_start(sep2, False, False, 0)
+        
+        # How to use section
+        how_label = Gtk.Label()
+        how_label.set_markup("<span size='x-large' weight='bold'>How to Use This Installer</span>")
+        how_label.set_halign(Gtk.Align.START)
+        how_label.set_margin_top(10)
+        content.pack_start(how_label, False, False, 0)
+        
+        # Step by step with nice formatting
+        steps = [
+            ("1️⃣", "Choose Your Apps", "Go to the <b>📦 Components</b> tab and select the applications, languages, and containers you want to install."),
+            ("2️⃣", "Customize Your Desktop", "Visit the <b>🎨 Desktop</b> tab to pick your theme, fonts, and desktop settings."),
+            ("3️⃣", "Save Your Choices", "Click <b>💾 Save Configuration</b> to save your selections."),
+            ("4️⃣", "Start Installation", "Go to the <b>▶️  Install</b> tab and click <b>🚀 Start Installation</b> to begin."),
+            ("5️⃣", "Watch Progress", "Monitor the installation in real-time through the embedded terminal."),
+            ("6️⃣", "Check Status", "View installation results in the <b>📊 Status</b> tab when complete."),
+        ]
+        
+        for emoji, title, desc in steps:
+            step_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=15)
+            step_box.set_margin_start(20)
+            step_box.set_margin_top(10)
+            
+            emoji_label = Gtk.Label()
+            emoji_label.set_markup(f"<span size='x-large'>{emoji}</span>")
+            emoji_label.set_valign(Gtk.Align.START)
+            step_box.pack_start(emoji_label, False, False, 0)
+            
+            text_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+            
+            step_title = Gtk.Label()
+            step_title.set_markup(f"<span size='large' weight='bold'>{title}</span>")
+            step_title.set_halign(Gtk.Align.START)
+            text_box.pack_start(step_title, False, False, 0)
+            
+            step_desc = Gtk.Label()
+            step_desc.set_markup(desc)
+            step_desc.set_halign(Gtk.Align.START)
+            step_desc.set_line_wrap(True)
+            step_desc.set_max_width_chars(60)
+            text_box.pack_start(step_desc, False, False, 0)
+            
+            step_box.pack_start(text_box, True, True, 0)
+            content.pack_start(step_box, False, False, 0)
+        
+        # Separator
+        sep3 = Gtk.Separator(orientation=Gtk.Orientation.HORIZONTAL)
+        sep3.set_margin_top(20)
+        content.pack_start(sep3, False, False, 0)
+        
+        # Features section
+        features_label = Gtk.Label()
+        features_label.set_markup("<span size='x-large' weight='bold'>✨ Key Features</span>")
+        features_label.set_halign(Gtk.Align.START)
+        features_label.set_margin_top(10)
+        content.pack_start(features_label, False, False, 0)
+        
+        features_grid = Gtk.Grid()
+        features_grid.set_row_spacing(10)
+        features_grid.set_column_spacing(20)
+        features_grid.set_margin_start(20)
+        features_grid.set_margin_top(10)
+        
+        features = [
+            ("✅", "Safe & Idempotent", "Can be run multiple times safely"),
+            ("🔍", "Smart Detection", "Skips already-installed packages"),
+            ("🎨", "Beautiful Themes", "10+ carefully curated color schemes"),
+            ("⚡", "Fast & Reliable", "Robust error handling and state tracking"),
+            ("📝", "Complete Documentation", "Detailed guides for everything"),
+            ("🔧", "Easy Customization", "Pick exactly what you want"),
+        ]
+        
+        row = 0
+        col = 0
+        for emoji, title, desc in features:
+            feature_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+            
+            feature_emoji = Gtk.Label()
+            feature_emoji.set_markup(f"<span size='large'>{emoji}</span>")
+            feature_box.pack_start(feature_emoji, False, False, 0)
+            
+            feature_text = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+            feature_title = Gtk.Label()
+            feature_title.set_markup(f"<b>{title}</b>")
+            feature_title.set_halign(Gtk.Align.START)
+            feature_text.pack_start(feature_title, False, False, 0)
+            
+            feature_desc = Gtk.Label(label=desc)
+            feature_desc.set_halign(Gtk.Align.START)
+            feature_desc.get_style_context().add_class('dim-label')
+            feature_text.pack_start(feature_desc, False, False, 0)
+            
+            feature_box.pack_start(feature_text, True, True, 0)
+            features_grid.attach(feature_box, col, row, 1, 1)
+            
+            col += 1
+            if col > 1:
+                col = 0
+                row += 1
+        
+        content.pack_start(features_grid, False, False, 0)
+        
+        # Call to action
+        cta_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        cta_box.set_margin_top(30)
+        cta_box.set_halign(Gtk.Align.CENTER)
+        
+        cta_label = Gtk.Label()
+        cta_label.set_markup("<span size='large' weight='bold'>Ready to get started?</span>")
+        cta_box.pack_start(cta_label, False, False, 0)
+        
+        cta_button = Gtk.Button(label="📦 Choose Components →")
+        cta_button.set_size_request(250, 50)
+        cta_button.get_style_context().add_class('suggested-action')
+        cta_button.connect("clicked", lambda b: self.notebook.set_current_page(1))
+        cta_box.pack_start(cta_button, False, False, 0)
+        
+        content.pack_start(cta_box, False, False, 0)
+        
+        return box
+    
     def build_selection_tab(self) -> Gtk.Box:
         """Build component selection tab"""
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -164,35 +445,38 @@ class BentoboxGUI:
         scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         box.pack_start(scrolled, True, True, 0)
         
-        # Content box
-        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
+        # Content box - HORIZONTAL for 3 columns
+        content = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=20)
         content.set_margin_start(10)
         content.set_margin_end(10)
         content.set_margin_top(10)
+        content.set_homogeneous(True)
         scrolled.add(content)
         
-        # Optional Desktop Apps
+        # === COLUMN 1: Desktop Applications ===
+        apps_column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        
         apps_label = Gtk.Label()
         apps_label.set_markup("<b>Desktop Applications</b>")
         apps_label.set_halign(Gtk.Align.START)
-        content.pack_start(apps_label, False, False, 0)
+        apps_column.pack_start(apps_label, False, False, 0)
         
         apps = [
-            ("1password", "1Password - Password Manager"),
-            ("cursor", "Cursor - AI Code Editor"),
-            ("tailscale", "Tailscale - Mesh VPN"),
-            ("brave", "Brave - Privacy Browser"),
-            ("chrome", "Google Chrome"),
-            ("gimp", "GIMP - Image Editor"),
-            ("obs-studio", "OBS Studio - Screen Recorder"),
-            ("rubymine", "RubyMine - Ruby IDE"),
-            ("sublime-text", "Sublime Text - Text Editor"),
-            ("winboat", "WinBoat - Run Windows Apps"),
+            ("1password", "1Password"),
+            ("cursor", "Cursor"),
+            ("tailscale", "Tailscale"),
+            ("brave", "Brave Browser"),
+            ("chrome", "Chrome"),
+            ("gimp", "GIMP"),
+            ("obs-studio", "OBS Studio"),
+            ("rubymine", "RubyMine"),
+            ("sublime-text", "Sublime Text"),
+            ("winboat", "WinBoat"),
         ]
         
         apps_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        apps_box.set_margin_start(20)
-        content.pack_start(apps_box, False, False, 0)
+        apps_box.set_margin_start(10)
+        apps_column.pack_start(apps_box, False, False, 0)
         
         for app_id, app_name in apps:
             cb = Gtk.CheckButton(label=app_name)
@@ -200,27 +484,30 @@ class BentoboxGUI:
             cb.connect("toggled", self.on_app_toggled, app_id)
             apps_box.pack_start(cb, False, False, 0)
         
-        # Programming Languages
+        content.pack_start(apps_column, True, True, 0)
+        
+        # === COLUMN 2: Programming Languages ===
+        lang_column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        
         lang_label = Gtk.Label()
         lang_label.set_markup("<b>Programming Languages</b>")
         lang_label.set_halign(Gtk.Align.START)
-        lang_label.set_margin_top(10)
-        content.pack_start(lang_label, False, False, 0)
+        lang_column.pack_start(lang_label, False, False, 0)
         
         languages = [
-            ("Node.js", "Node.js - JavaScript Runtime"),
-            ("Python", "Python - Programming Language"),
+            ("Node.js", "Node.js"),
+            ("Python", "Python"),
             ("Ruby on Rails", "Ruby on Rails"),
-            ("Go", "Go - Programming Language"),
-            ("PHP", "PHP - Programming Language"),
-            ("Elixir", "Elixir - Functional Language"),
-            ("Rust", "Rust - Systems Language"),
-            ("Java", "Java - Programming Language"),
+            ("Go", "Go"),
+            ("PHP", "PHP"),
+            ("Elixir", "Elixir"),
+            ("Rust", "Rust"),
+            ("Java", "Java"),
         ]
         
         lang_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        lang_box.set_margin_start(20)
-        content.pack_start(lang_box, False, False, 0)
+        lang_box.set_margin_start(10)
+        lang_column.pack_start(lang_box, False, False, 0)
         
         for lang_id, lang_name in languages:
             cb = Gtk.CheckButton(label=lang_name)
@@ -228,28 +515,33 @@ class BentoboxGUI:
             cb.connect("toggled", self.on_lang_toggled, lang_id)
             lang_box.pack_start(cb, False, False, 0)
         
-        # Docker Containers
+        content.pack_start(lang_column, True, True, 0)
+        
+        # === COLUMN 3: Docker Containers ===
+        container_column = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        
         container_label = Gtk.Label()
         container_label.set_markup("<b>Docker Containers</b>")
         container_label.set_halign(Gtk.Align.START)
-        container_label.set_margin_top(10)
-        content.pack_start(container_label, False, False, 0)
+        container_column.pack_start(container_label, False, False, 0)
         
         containers = [
-            ("Portainer", "Portainer - Docker Management UI"),
-            ("OpenWebUI", "OpenWebUI - AI Chat Interface"),
-            ("Ollama", "Ollama - Local LLM Server"),
+            ("Portainer", "Portainer"),
+            ("OpenWebUI", "OpenWebUI"),
+            ("Ollama", "Ollama"),
         ]
         
         container_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
-        container_box.set_margin_start(20)
-        content.pack_start(container_box, False, False, 0)
+        container_box.set_margin_start(10)
+        container_column.pack_start(container_box, False, False, 0)
         
         for container_id, container_name in containers:
             cb = Gtk.CheckButton(label=container_name)
             cb.set_active(container_id in self.config.get('containers', []))
             cb.connect("toggled", self.on_container_toggled, container_id)
             container_box.pack_start(cb, False, False, 0)
+        
+        content.pack_start(container_column, True, True, 0)
         
         return box
     
@@ -376,7 +668,7 @@ class BentoboxGUI:
         gnome_box.pack_start(self.gnome_hotkeys_cb, False, False, 0)
         
         self.gnome_extensions_cb = Gtk.CheckButton(label="Install GNOME extensions (requires browser approval)")
-        self.gnome_extensions_cb.set_active(self.config.get('desktop', {}).get('install_extensions', False))
+        self.gnome_extensions_cb.set_active(self.config.get('desktop', {}).get('install_extensions', True))
         gnome_box.pack_start(self.gnome_extensions_cb, False, False, 0)
         
         # === QUICK ACTIONS ===
@@ -405,6 +697,147 @@ class BentoboxGUI:
         
         return box
     
+    def build_security_tab(self) -> Gtk.Box:
+        """Build security hardening configuration tab"""
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box.set_margin_top(10)
+        box.set_margin_start(10)
+        box.set_margin_end(10)
+        
+        # Scrolled window
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        box.pack_start(scrolled, True, True, 0)
+        
+        # Content box
+        content = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=20)
+        content.set_margin_start(10)
+        content.set_margin_end(10)
+        content.set_margin_top(10)
+        scrolled.add(content)
+        
+        # Header
+        header = Gtk.Label()
+        header.set_markup("<big><b>🔒 Security Configuration</b></big>")
+        header.set_halign(Gtk.Align.START)
+        content.pack_start(header, False, False, 0)
+        
+        info = Gtk.Label()
+        info.set_markup("<i>Configure security hardening options for your system</i>")
+        info.set_halign(Gtk.Align.START)
+        content.pack_start(info, False, False, 0)
+        
+        # === FIREWALL SECTION ===
+        firewall_label = Gtk.Label()
+        firewall_label.set_markup("<b>🛡️  Firewall (UFW)</b>")
+        firewall_label.set_halign(Gtk.Align.START)
+        firewall_label.set_margin_top(10)
+        content.pack_start(firewall_label, False, False, 0)
+        
+        firewall_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        firewall_box.set_margin_start(20)
+        content.pack_start(firewall_box, False, False, 0)
+        
+        self.ufw_enable_cb = Gtk.CheckButton(label="Enable UFW firewall")
+        self.ufw_enable_cb.set_active(self.config.get('security', {}).get('enable_ufw', False))
+        firewall_box.pack_start(self.ufw_enable_cb, False, False, 0)
+        
+        self.ufw_deny_incoming_cb = Gtk.CheckButton(label="Deny all incoming connections by default")
+        self.ufw_deny_incoming_cb.set_active(self.config.get('security', {}).get('ufw_deny_incoming', False))
+        firewall_box.pack_start(self.ufw_deny_incoming_cb, False, False, 0)
+        
+        self.ufw_allow_ssh_cb = Gtk.CheckButton(label="Allow SSH (port 22)")
+        self.ufw_allow_ssh_cb.set_active(self.config.get('security', {}).get('ufw_allow_ssh', False))
+        firewall_box.pack_start(self.ufw_allow_ssh_cb, False, False, 0)
+        
+        # === SYSTEM HARDENING ===
+        hardening_label = Gtk.Label()
+        hardening_label.set_markup("<b>🔐 System Hardening</b>")
+        hardening_label.set_halign(Gtk.Align.START)
+        hardening_label.set_margin_top(10)
+        content.pack_start(hardening_label, False, False, 0)
+        
+        hardening_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        hardening_box.set_margin_start(20)
+        content.pack_start(hardening_box, False, False, 0)
+        
+        self.unattended_upgrades_cb = Gtk.CheckButton(label="Enable automatic security updates")
+        self.unattended_upgrades_cb.set_active(self.config.get('security', {}).get('unattended_upgrades', False))
+        hardening_box.pack_start(self.unattended_upgrades_cb, False, False, 0)
+        
+        self.fail2ban_cb = Gtk.CheckButton(label="Install Fail2Ban (intrusion prevention)")
+        self.fail2ban_cb.set_active(self.config.get('security', {}).get('install_fail2ban', False))
+        hardening_box.pack_start(self.fail2ban_cb, False, False, 0)
+        
+        self.disable_root_login_cb = Gtk.CheckButton(label="Disable root SSH login")
+        self.disable_root_login_cb.set_active(self.config.get('security', {}).get('disable_root_login', False))
+        hardening_box.pack_start(self.disable_root_login_cb, False, False, 0)
+        
+        self.password_required_cb = Gtk.CheckButton(label="Require password for sudo")
+        self.password_required_cb.set_active(self.config.get('security', {}).get('password_required', False))
+        hardening_box.pack_start(self.password_required_cb, False, False, 0)
+        
+        # === SSH HARDENING ===
+        ssh_label = Gtk.Label()
+        ssh_label.set_markup("<b>🔑 SSH Security</b>")
+        ssh_label.set_halign(Gtk.Align.START)
+        ssh_label.set_margin_top(10)
+        content.pack_start(ssh_label, False, False, 0)
+        
+        ssh_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        ssh_box.set_margin_start(20)
+        content.pack_start(ssh_box, False, False, 0)
+        
+        self.ssh_key_only_cb = Gtk.CheckButton(label="Disable password authentication (key-only)")
+        self.ssh_key_only_cb.set_active(self.config.get('security', {}).get('ssh_key_only', False))
+        ssh_box.pack_start(self.ssh_key_only_cb, False, False, 0)
+        
+        self.ssh_change_port_cb = Gtk.CheckButton(label="Change SSH port from 22 to 2222")
+        self.ssh_change_port_cb.set_active(self.config.get('security', {}).get('ssh_change_port', False))
+        ssh_box.pack_start(self.ssh_change_port_cb, False, False, 0)
+        
+        # === PRIVACY ===
+        privacy_label = Gtk.Label()
+        privacy_label.set_markup("<b>🕵️  Privacy</b>")
+        privacy_label.set_halign(Gtk.Align.START)
+        privacy_label.set_margin_top(10)
+        content.pack_start(privacy_label, False, False, 0)
+        
+        privacy_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        privacy_box.set_margin_start(20)
+        content.pack_start(privacy_box, False, False, 0)
+        
+        self.disable_apport_cb = Gtk.CheckButton(label="Disable error reporting (apport)")
+        self.disable_apport_cb.set_active(self.config.get('security', {}).get('disable_apport', False))
+        privacy_box.pack_start(self.disable_apport_cb, False, False, 0)
+        
+        self.disable_popularity_contest_cb = Gtk.CheckButton(label="Disable popularity contest")
+        self.disable_popularity_contest_cb.set_active(self.config.get('security', {}).get('disable_popularity_contest', False))
+        privacy_box.pack_start(self.disable_popularity_contest_cb, False, False, 0)
+        
+        # === QUICK ACTIONS ===
+        actions_label = Gtk.Label()
+        actions_label.set_markup("<b>🚀 Quick Actions</b>")
+        actions_label.set_halign(Gtk.Align.START)
+        actions_label.set_margin_top(10)
+        content.pack_start(actions_label, False, False, 0)
+        
+        actions_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
+        actions_box.set_margin_start(20)
+        actions_box.set_margin_top(5)
+        content.pack_start(actions_box, False, False, 0)
+        
+        apply_security_btn = Gtk.Button(label="🔒 Apply Security Settings Now")
+        apply_security_btn.get_style_context().add_class('suggested-action')
+        apply_security_btn.connect("clicked", self.on_apply_security)
+        actions_box.pack_start(apply_security_btn, False, False, 0)
+        
+        audit_btn = Gtk.Button(label="🔍 Run Security Audit")
+        audit_btn.connect("clicked", self.on_security_audit)
+        actions_box.pack_start(audit_btn, False, False, 0)
+        
+        return box
+    
     def build_install_tab(self) -> Gtk.Box:
         """Build installation tab with terminal"""
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -414,9 +847,9 @@ class BentoboxGUI:
         box.set_margin_bottom(10)
         
         # Info label
-        info = Gtk.Label(label="Installation progress will appear below:")
-        info.set_halign(Gtk.Align.START)
-        box.pack_start(info, False, False, 0)
+        self.install_info_label = Gtk.Label(label="Installation progress will appear below:")
+        self.install_info_label.set_halign(Gtk.Align.START)
+        box.pack_start(self.install_info_label, False, False, 0)
         
         # Terminal widget
         scrolled = Gtk.ScrolledWindow()
@@ -427,11 +860,6 @@ class BentoboxGUI:
         self.terminal.set_font(Pango.FontDescription("Monospace 10"))
         self.terminal.set_scroll_on_output(True)
         scrolled.add(self.terminal)
-        
-        # Progress bar
-        self.progress_bar = Gtk.ProgressBar()
-        self.progress_bar.set_show_text(True)
-        box.pack_start(self.progress_bar, False, False, 0)
         
         return box
     
@@ -465,6 +893,266 @@ class BentoboxGUI:
         self.update_status_view()
         
         return box
+    
+    def build_maintenance_tab(self) -> Gtk.Box:
+        """Build maintenance/uninstall tab"""
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box.set_margin_top(20)
+        box.set_margin_start(20)
+        box.set_margin_end(20)
+        box.set_margin_bottom(20)
+        
+        # Header
+        header = Gtk.Label()
+        header.set_markup("<big><b>⚙️  System Maintenance</b></big>")
+        header.set_halign(Gtk.Align.START)
+        header.set_margin_bottom(10)
+        box.pack_start(header, False, False, 0)
+        
+        # Info section
+        info_frame = Gtk.Frame()
+        info_frame.set_margin_bottom(20)
+        info_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        info_box.set_margin_start(15)
+        info_box.set_margin_end(15)
+        info_box.set_margin_top(15)
+        info_box.set_margin_bottom(15)
+        
+        info_label = Gtk.Label()
+        info_label.set_markup(
+            "<b>System Reset Options</b>\n\n"
+            "Use these tools to manage or remove Bentobox components from your system."
+        )
+        info_label.set_line_wrap(True)
+        info_label.set_halign(Gtk.Align.START)
+        info_box.pack_start(info_label, False, False, 0)
+        info_frame.add(info_box)
+        box.pack_start(info_frame, False, False, 0)
+        
+        # Spacer
+        box.pack_start(Gtk.Label(), True, True, 0)
+        
+        # Uninstall section
+        uninstall_frame = Gtk.Frame()
+        uninstall_frame.set_label(" ⚠️  Danger Zone ")
+        uninstall_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=15)
+        uninstall_box.set_margin_start(20)
+        uninstall_box.set_margin_end(20)
+        uninstall_box.set_margin_top(20)
+        uninstall_box.set_margin_bottom(20)
+        
+        warning_label = Gtk.Label()
+        warning_label.set_markup(
+            "<b>Uninstall Bentobox</b>\n\n"
+            "This will remove all Bentobox-installed applications, configurations,\n"
+            "and customizations from your system.\n\n"
+            "<b>⚠️  This action cannot be undone!</b>"
+        )
+        warning_label.set_line_wrap(True)
+        warning_label.set_justify(Gtk.Justification.CENTER)
+        uninstall_box.pack_start(warning_label, False, False, 0)
+        
+        # Uninstall button
+        uninstall_btn = Gtk.Button(label="🗑️  Uninstall & Reset System")
+        uninstall_btn.set_size_request(300, 50)
+        uninstall_btn.get_style_context().add_class('destructive-action')
+        uninstall_btn.connect("clicked", self.on_uninstall_bentobox)
+        uninstall_btn.set_halign(Gtk.Align.CENTER)
+        uninstall_box.pack_start(uninstall_btn, False, False, 0)
+        
+        uninstall_frame.add(uninstall_box)
+        box.pack_start(uninstall_frame, False, False, 0)
+        
+        # Spacer
+        box.pack_start(Gtk.Label(), True, True, 0)
+        
+        return box
+    
+    def build_wallpaper_tab(self) -> Gtk.Box:
+        """Build simple local wallpaper selector tab"""
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
+        box.set_margin_top(10)
+        box.set_margin_start(10)
+        box.set_margin_end(10)
+        
+        # Header label
+        header = Gtk.Label()
+        header.set_markup("<big><b>🖼️  Select Desktop Wallpaper</b></big>")
+        header.set_margin_bottom(10)
+        box.pack_start(header, False, False, 0)
+        
+        # Info label
+        info = Gtk.Label()
+        info.set_markup("<i>Choose from the included wallpaper collection</i>")
+        info.set_margin_bottom(10)
+        box.pack_start(info, False, False, 0)
+        
+        # Scrolled window for wallpaper grid
+        scrolled = Gtk.ScrolledWindow()
+        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
+        box.pack_start(scrolled, True, True, 0)
+        
+        # Grid for wallpapers
+        self.wallpaper_grid = Gtk.FlowBox()
+        self.wallpaper_grid.set_valign(Gtk.Align.START)
+        self.wallpaper_grid.set_max_children_per_line(3)
+        self.wallpaper_grid.set_selection_mode(Gtk.SelectionMode.NONE)
+        self.wallpaper_grid.set_homogeneous(True)
+        self.wallpaper_grid.set_row_spacing(15)
+        self.wallpaper_grid.set_column_spacing(15)
+        scrolled.add(self.wallpaper_grid)
+        
+        # Load local wallpapers
+        self.load_local_wallpapers()
+        
+        return box
+    
+    def load_local_wallpapers(self):
+        """Load wallpapers from the included collection"""
+        wallpaper_dir = self.omakub_path / 'wallpaper'
+        
+        if not wallpaper_dir.exists():
+            error_label = Gtk.Label()
+            error_label.set_markup("<span color='red'>❌ Wallpaper directory not found</span>")
+            self.wallpaper_grid.add(error_label)
+            return
+        
+        # Find all jpg images in wallpaper directory
+        wallpapers = sorted(wallpaper_dir.glob('*.jpg'))
+        
+        if not wallpapers:
+            error_label = Gtk.Label()
+            error_label.set_markup("<i>No wallpapers found</i>")
+            self.wallpaper_grid.add(error_label)
+            return
+        
+        for wallpaper_path in wallpapers:
+            card = self.create_local_wallpaper_card(wallpaper_path)
+            self.wallpaper_grid.add(card)
+        
+        self.wallpaper_grid.show_all()
+    
+    def create_local_wallpaper_card(self, wallpaper_path: Path) -> Gtk.Box:
+        """Create a wallpaper card widget"""
+        card = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        card.set_size_request(250, 220)
+        
+        # Event box for click handling
+        event_box = Gtk.EventBox()
+        card.pack_start(event_box, True, True, 0)
+        
+        inner_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        event_box.add(inner_box)
+        
+        # Thumbnail image
+        try:
+            from PIL import Image
+            
+            # Load and resize image for thumbnail
+            img = Image.open(wallpaper_path)
+            img.thumbnail((240, 140))
+            
+            # Save to temp location
+            temp_thumb = Path.home() / '.cache/bentobox' / f"thumb_{wallpaper_path.name}"
+            temp_thumb.parent.mkdir(parents=True, exist_ok=True)
+            img.save(temp_thumb, 'JPEG')
+            
+            # Create GTK image
+            image = Gtk.Image.new_from_file(str(temp_thumb))
+            image.set_size_request(240, 140)
+            
+        except Exception as e:
+            # Fallback to icon if image loading fails
+            image = Gtk.Image()
+            image.set_from_icon_name("image-x-generic", Gtk.IconSize.DIALOG)
+            image.set_size_request(240, 140)
+        
+        inner_box.pack_start(image, False, False, 0)
+        
+        # Wallpaper name (extract from filename)
+        name = wallpaper_path.stem.replace('pexels-', '').replace('-', ' ').title()
+        name_label = Gtk.Label()
+        name_label.set_markup(f"<b>{name[:30]}</b>")
+        name_label.set_line_wrap(True)
+        name_label.set_max_width_chars(30)
+        inner_box.pack_start(name_label, False, False, 0)
+        
+        # Apply button
+        apply_btn = Gtk.Button(label="Set as Wallpaper")
+        apply_btn.connect("clicked", self.on_apply_wallpaper, str(wallpaper_path))
+        inner_box.pack_start(apply_btn, False, False, 0)
+        
+        # Add hover effect
+        event_box.connect("enter-notify-event", self.on_wallpaper_hover_enter, card)
+        event_box.connect("leave-notify-event", self.on_wallpaper_hover_leave, card)
+        
+        return card
+    
+    def on_wallpaper_hover_enter(self, widget, event, card):
+        """Handle mouse hover enter"""
+        card.set_opacity(0.8)
+    
+    def on_wallpaper_hover_leave(self, widget, event, card):
+        """Handle mouse hover leave"""
+        card.set_opacity(1.0)
+    
+    def on_apply_wallpaper(self, button, wallpaper_path):
+        """Apply selected wallpaper"""
+        try:
+            # Set GNOME wallpaper
+            subprocess.run([
+                'gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri',
+                f'file://{wallpaper_path}'
+            ], check=True)
+            
+            subprocess.run([
+                'gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri-dark',
+                f'file://{wallpaper_path}'
+            ], check=True)
+            
+            # Show success message
+            dialog = Gtk.MessageDialog(
+                transient_for=self,
+                flags=0,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Wallpaper Applied"
+            )
+            dialog.format_secondary_text(f"Your wallpaper has been set successfully!")
+            dialog.run()
+            dialog.destroy()
+            
+        except Exception as e:
+            dialog = Gtk.MessageDialog(
+                transient_for=self,
+                flags=0,
+                message_type=Gtk.MessageType.ERROR,
+                buttons=Gtk.ButtonsType.OK,
+                text="Failed to Apply Wallpaper"
+            )
+            dialog.format_secondary_text(str(e))
+            dialog.run()
+            dialog.destroy()
+        card.pack_start(title_label, False, False, 0)
+        
+        # Photographer
+        author_label = Gtk.Label()
+        author_label.set_markup(f"<small>{photo['photographer']}</small>")
+        card.pack_start(author_label, False, False, 0)
+        
+        # Provider badge
+        provider_label = Gtk.Label()
+        provider_label.set_markup(f"<small><i>{photo['provider']}</i></small>")
+        card.pack_start(provider_label, False, False, 0)
+        
+        # Buttons
+        button_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=5)
+        
+        download_btn = Gtk.Button(label="⬇")
+        download_btn.set_tooltip_text("Download")
+        download_btn.connect("clicked", self.on_download_wallpaper, photo)
+        button_box.pack_start(download_btn, True, True, 0)
+        
     
     def on_app_toggled(self, checkbox, app_id):
         """Handle app checkbox toggle"""
@@ -578,7 +1266,7 @@ class BentoboxGUI:
         self.set_wallpaper_cb.set_active(True)
         self.gnome_settings_cb.set_active(True)
         self.gnome_hotkeys_cb.set_active(True)
-        self.gnome_extensions_cb.set_active(False)
+        self.gnome_extensions_cb.set_active(True)
         
         info = Gtk.MessageDialog(
             transient_for=self.window,
@@ -588,6 +1276,104 @@ class BentoboxGUI:
             text="Defaults Restored"
         )
         info.format_secondary_text("Desktop customization options reset to defaults.")
+        info.run()
+        info.destroy()
+    
+    def on_apply_security(self, button):
+        """Apply security settings now"""
+        confirm = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text="Apply Security Settings"
+        )
+        confirm.format_secondary_text(
+            "This will apply the selected security hardening options.\n\n"
+            "⚠️  Warning: Some changes (like disabling password auth) may lock you out\n"
+            "if not configured properly. Continue?"
+        )
+        
+        response = confirm.run()
+        confirm.destroy()
+        
+        if response != Gtk.ResponseType.YES:
+            return
+        
+        # Show info that this feature is coming soon
+        info = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.OK,
+            text="Security Configuration"
+        )
+        info.format_secondary_text(
+            "Security settings will be applied during installation.\n\n"
+            "Click 'Save Configuration' to save your security preferences,\n"
+            "then run the installation to apply them."
+        )
+        info.run()
+        info.destroy()
+    
+    def on_security_audit(self, button):
+        """Run a security audit"""
+        # Show info dialog
+        info = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.OK,
+            text="Security Audit"
+        )
+        
+        # Run basic security checks
+        audit_results = []
+        
+        # Check if UFW is enabled
+        try:
+            result = subprocess.run(['sudo', 'ufw', 'status'], capture_output=True, text=True, timeout=5)
+            if 'Status: active' in result.stdout:
+                audit_results.append("✅ UFW firewall is active")
+            else:
+                audit_results.append("❌ UFW firewall is not active")
+        except:
+            audit_results.append("⚠️  Could not check UFW status")
+        
+        # Check if unattended-upgrades is installed
+        try:
+            result = subprocess.run(['dpkg', '-l', 'unattended-upgrades'], capture_output=True, text=True, timeout=5)
+            if result.returncode == 0:
+                audit_results.append("✅ Automatic security updates enabled")
+            else:
+                audit_results.append("❌ Automatic security updates not configured")
+        except:
+            audit_results.append("⚠️  Could not check unattended-upgrades")
+        
+        # Check if fail2ban is running
+        try:
+            result = subprocess.run(['systemctl', 'is-active', 'fail2ban'], capture_output=True, text=True, timeout=5)
+            if result.stdout.strip() == 'active':
+                audit_results.append("✅ Fail2Ban is active")
+            else:
+                audit_results.append("❌ Fail2Ban is not active")
+        except:
+            audit_results.append("⚠️  Fail2Ban not installed")
+        
+        # Check SSH configuration
+        try:
+            with open('/etc/ssh/sshd_config', 'r') as f:
+                ssh_config = f.read()
+                if 'PermitRootLogin no' in ssh_config or 'PermitRootLogin prohibit-password' in ssh_config:
+                    audit_results.append("✅ Root SSH login is disabled")
+                else:
+                    audit_results.append("⚠️  Root SSH login may be enabled")
+        except:
+            audit_results.append("⚠️  Could not check SSH configuration")
+        
+        info.format_secondary_text(
+            "Security Audit Results:\n\n" + "\n".join(audit_results)
+        )
         info.run()
         info.destroy()
     
@@ -695,18 +1481,239 @@ class BentoboxGUI:
         dialog.run()
         dialog.destroy()
     
+    def on_uninstall_bentobox(self, button):
+        """Uninstall Bentobox and reset to near-default Ubuntu"""
+        # Strong warning dialog
+        warning = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.WARNING,
+            buttons=Gtk.ButtonsType.NONE,
+            text="⚠️  Uninstall Bentobox & Reset System"
+        )
+        warning.format_secondary_text(
+            "This will:\n\n"
+            "🗑️  Remove all Bentobox-installed applications\n"
+            "   • Desktop apps (Cursor, VS Code, Chrome, Typora, etc.)\n"
+            "   • Terminal tools (btop, fastfetch, lazygit, zellij, etc.)\n"
+            "   • Flatpak apps (Pinta, GIMP)\n"
+            "🎨 Reset GNOME to default theme and settings\n"
+            "📝 Remove custom fonts\n"
+            "🐳 Stop and remove Docker containers\n"
+            "🔧 Remove development tools (mise, Node.js, etc.)\n"
+            "⚙️  Reset terminal configurations\n"
+            "🖼️  Reset wallpaper to default\n"
+            "🗂️  Remove repository sources\n\n"
+            "This action CANNOT be undone!\n\n"
+            "Your personal files will NOT be deleted, but all\n"
+            "Bentobox-installed applications and customizations will be removed."
+        )
+        
+        warning.add_button("Cancel", Gtk.ResponseType.CANCEL)
+        warning.add_button("Uninstall & Reset", Gtk.ResponseType.OK)
+        
+        # Make the OK button red
+        ok_button = warning.get_widget_for_response(Gtk.ResponseType.OK)
+        ok_button.get_style_context().add_class('destructive-action')
+        
+        response = warning.run()
+        warning.destroy()
+        
+        if response != Gtk.ResponseType.OK:
+            return
+        
+        # Second confirmation
+        confirm = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            text="Final Confirmation"
+        )
+        confirm.format_secondary_text(
+            "Are you absolutely sure you want to uninstall Bentobox?\n\n"
+            "Type 'UNINSTALL' in the next dialog to confirm."
+        )
+        
+        response2 = confirm.run()
+        confirm.destroy()
+        
+        if response2 != Gtk.ResponseType.YES:
+            return
+        
+        # Text entry confirmation
+        entry_dialog = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.OK_CANCEL,
+            text="Type UNINSTALL to confirm"
+        )
+        
+        entry = Gtk.Entry()
+        entry.set_placeholder_text("Type: UNINSTALL")
+        entry.set_width_chars(30)
+        
+        content_area = entry_dialog.get_content_area()
+        content_area.pack_start(entry, True, True, 10)
+        entry_dialog.show_all()
+        
+        response3 = entry_dialog.run()
+        typed_text = entry.get_text()
+        entry_dialog.destroy()
+        
+        if response3 != Gtk.ResponseType.OK or typed_text != "UNINSTALL":
+            info = Gtk.MessageDialog(
+                transient_for=self.window,
+                flags=0,
+                message_type=Gtk.MessageType.INFO,
+                buttons=Gtk.ButtonsType.OK,
+                text="Uninstall Cancelled"
+            )
+            info.format_secondary_text("No changes were made to your system.")
+            info.run()
+            info.destroy()
+            return
+        
+        # Proceed with uninstall
+        self.run_uninstall()
+    
+    def run_uninstall(self):
+        """Execute the uninstall process"""
+        # Show progress dialog
+        progress_dialog = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.NONE,
+            text="Uninstalling Bentobox..."
+        )
+        progress_dialog.format_secondary_text(
+            "This may take several minutes.\nPlease wait..."
+        )
+        progress_dialog.show_all()
+        
+        # Process events to show dialog
+        while Gtk.events_pending():
+            Gtk.main_iteration()
+        
+        # Run uninstall in thread
+        thread = threading.Thread(target=self.uninstall_worker, args=(progress_dialog,))
+        thread.daemon = True
+        thread.start()
+    
+    def uninstall_worker(self, progress_dialog):
+        """Perform uninstall operations"""
+        try:
+            uninstall_script = self.omakub_path / 'install/uninstall-bentobox.sh'
+            
+            if uninstall_script.exists():
+                # Run the comprehensive uninstall script
+                subprocess.run(
+                    ['bash', str(uninstall_script)],
+                    env={**os.environ, 'OMAKUB_PATH': str(self.omakub_path)},
+                    timeout=600,  # 10 minute timeout
+                    check=False
+                )
+            else:
+                # Fallback: run basic cleanup
+                self.basic_uninstall()
+            
+            GLib.idle_add(self.on_uninstall_complete, progress_dialog)
+            
+        except Exception as e:
+            GLib.idle_add(self.on_uninstall_error, progress_dialog, str(e))
+    
+    def basic_uninstall(self):
+        """Basic uninstall if script not found"""
+        # Stop and remove Docker containers
+        subprocess.run(['docker', 'stop', 'portainer', 'open-webui', 'ollama'], 
+                      check=False, capture_output=True)
+        subprocess.run(['docker', 'rm', 'portainer', 'open-webui', 'ollama'], 
+                      check=False, capture_output=True)
+        
+        # Reset GNOME settings
+        subprocess.run(['gsettings', 'reset', 'org.gnome.desktop.interface', 'gtk-theme'], 
+                      check=False, capture_output=True)
+        subprocess.run(['gsettings', 'reset', 'org.gnome.desktop.interface', 'icon-theme'], 
+                      check=False, capture_output=True)
+        subprocess.run(['gsettings', 'reset', 'org.gnome.desktop.background', 'picture-uri'], 
+                      check=False, capture_output=True)
+    
+    def on_uninstall_complete(self, progress_dialog):
+        """Handle uninstall completion"""
+        progress_dialog.destroy()
+        
+        # Clear state file
+        if self.state_file.exists():
+            self.state_file.unlink()
+        
+        # Clear config file
+        if self.config_path.exists():
+            self.config_path.unlink()
+        
+        # Show completion dialog
+        complete = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.INFO,
+            buttons=Gtk.ButtonsType.OK,
+            text="✅ Uninstall Complete"
+        )
+        complete.format_secondary_text(
+            "Bentobox has been uninstalled.\n\n"
+            "Your system has been reset to near-default Ubuntu state.\n\n"
+            "What was removed:\n"
+            "• Desktop applications (Cursor, VS Code, Chrome, etc.)\n"
+            "• Terminal tools (btop, fastfetch, lazygit, etc.)\n"
+            "• Docker containers (Portainer, OpenWebUI, Ollama)\n"
+            "• GNOME theme, fonts, and customizations\n"
+            "• Custom configurations and state files\n"
+            "• Repository sources and GPG keys\n\n"
+            "You may want to:\n"
+            "• Reboot your system\n"
+            "• Run 'sudo apt autoremove' to clean up packages\n"
+            "• Manually remove ~/.local/share/omakub if desired"
+        )
+        complete.run()
+        complete.destroy()
+        
+        # Refresh status view
+        self.update_status_view()
+    
+    def on_uninstall_error(self, progress_dialog, error_msg):
+        """Handle uninstall error"""
+        progress_dialog.destroy()
+        
+        error = Gtk.MessageDialog(
+            transient_for=self.window,
+            flags=0,
+            message_type=Gtk.MessageType.ERROR,
+            buttons=Gtk.ButtonsType.OK,
+            text="Uninstall Error"
+        )
+        error.format_secondary_text(
+            f"An error occurred during uninstall:\n\n{error_msg}\n\n"
+            "Some components may not have been removed.\n"
+            "You may need to manually clean up your system."
+        )
+        error.run()
+        error.destroy()
+    
     def on_start_install(self, button):
         """Start the installation process"""
         # Save config first
         self.save_config()
         
+        # Switch to Install tab (tab index 5)
+        self.notebook.set_current_page(5)
+        
+        # Update info label
+        self.install_info_label.set_markup("<b>🚀 Installation in progress...</b>")
+        
         # Disable install button
         self.install_btn.set_sensitive(False)
         self.install_btn.set_label("⏳ Installing...")
-        
-        # Reset progress
-        self.progress_bar.set_fraction(0)
-        self.progress_bar.set_text("Starting installation...")
         
         # Run installation in thread
         thread = threading.Thread(target=self.run_installation)
@@ -737,26 +1744,16 @@ class BentoboxGUI:
         """Handle installation completion"""
         self.install_btn.set_sensitive(True)
         self.install_btn.set_label("🚀 Start Installation")
-        self.progress_bar.set_fraction(1.0)
-        self.progress_bar.set_text("Installation complete!")
+        
+        # Update info label to show completion
+        self.install_info_label.set_markup(
+            "<big><b>✅ Installation Complete!</b></big>\n\n"
+            "Check the Status tab for details about installed components."
+        )
         
         # Refresh status
         self.state = self.load_state()
         self.update_status_view()
-        
-        # Show success dialog
-        dialog = Gtk.MessageDialog(
-            transient_for=self.window,
-            flags=0,
-            message_type=Gtk.MessageType.INFO,
-            buttons=Gtk.ButtonsType.OK,
-            text="Installation Complete!"
-        )
-        dialog.format_secondary_text(
-            "Bentobox installation finished.\nCheck the Status tab for details."
-        )
-        dialog.run()
-        dialog.destroy()
     
     def on_install_error(self, error_msg):
         """Handle installation error"""

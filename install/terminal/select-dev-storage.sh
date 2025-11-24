@@ -1,11 +1,34 @@
 #!/bin/bash
 
-# Install default containers
-if [[ -v OMAKUB_FIRST_RUN_CONTAINERS ]]; then
+# Load containers from config file if it exists
+CONFIG_FILE="$HOME/.bentobox-config.yaml"
+
+if [ -f "$CONFIG_FILE" ]; then
+	# Parse YAML config for containers
+	containers=$(python3 -c "
+import yaml
+with open('$CONFIG_FILE') as f:
+    config = yaml.safe_load(f)
+    containers = config.get('containers', [])
+    print(' '.join(containers))
+" 2>/dev/null)
+	
+	if [ -z "$containers" ]; then
+		echo "ℹ️  No containers selected in config, skipping..."
+		exit 0
+	fi
+	echo "📦 Using containers from config: $containers"
+elif [[ -v OMAKUB_FIRST_RUN_CONTAINERS ]]; then
 	containers=$OMAKUB_FIRST_RUN_CONTAINERS
 else
-	AVAILABLE_CONTAINERS=("Portainer" "OpenWebUI" "Ollama")
-	containers=$(gum choose "${AVAILABLE_CONTAINERS[@]}" --no-limit --height 5 --header "Select containers to deploy")
+	# Only show interactive prompt if no config exists
+	if command -v gum &> /dev/null; then
+		AVAILABLE_CONTAINERS=("Portainer" "OpenWebUI" "Ollama")
+		containers=$(gum choose "${AVAILABLE_CONTAINERS[@]}" --no-limit --height 5 --header "Select containers to deploy")
+	else
+		echo "ℹ️  No config file and gum not available, skipping container selection..."
+		exit 0
+	fi
 fi
 
 if [[ -n "$containers" ]]; then

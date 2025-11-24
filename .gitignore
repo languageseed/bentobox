@@ -7,6 +7,13 @@ performance-tuning*.sh
 # Local testing/development files
 commit.sh
 push-to-github.sh
+demo-*.sh
+demo-*.py
+test-*.sh
+test-*.py
+fix-*.sh
+install-new.sh
+bentobox-config.yaml
 
 # Local testing directory (private dev workflow)
 local-testing/
@@ -32,6 +39,7 @@ OMAKUB_COMPLETE_PACKAGE_LIST.md
 LIBVIRT_GUESTS_SHUTDOWN_ERROR.md
 DEPLOYMENT_ISSUES_REPORT.md
 FIX_SUMMARY.md
+WALLPAPER_FEATURE_SUMMARY.md
 
 # IDE and editor files
 .vscode/

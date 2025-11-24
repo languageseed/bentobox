@@ -1,0 +1,67 @@
+# BENTOBOX_THEME: v1
+NAME: [Your Theme Name]
+DESCRIPTION: [Short description of your theme's style and mood]
+AUTHOR: [Your Name or Theme Creator]
+HOMEPAGE: https://[theme-website].com
+VERSION: 1.0
+COLORS: [primary, secondary, accent colors]
+ACCENT: [main accent color]
+STYLE: [dark or light]
+SCREENSHOT: screenshot.png
+
+# =============================================================================
+# THEME METADATA
+# =============================================================================
+#
+# This file provides metadata about your theme that will be displayed in
+# the Bentobox GUI and used for theme discovery.
+#
+# REQUIRED FIELDS:
+#   - BENTOBOX_THEME: Must be "v1" (version identifier)
+#   - NAME: Display name shown in GUI
+#   - DESCRIPTION: Brief description of the theme
+#
+# OPTIONAL FIELDS:
+#   - AUTHOR: Creator name
+#   - HOMEPAGE: Official theme website
+#   - VERSION: Theme version number
+#   - COLORS: Comma-separated list of primary colors
+#   - ACCENT: Main accent color
+#   - STYLE: "dark" or "light"
+#   - SCREENSHOT: Filename of preview image
+#
+# =============================================================================
+# REQUIRED FILES FOR YOUR THEME:
+# =============================================================================
+#
+# Your theme directory must contain these files:
+#
+# 1. metadata.txt (this file)
+# 2. gnome.sh - GNOME desktop settings
+# 3. alacritty.toml - Terminal colors
+# 4. zellij.kdl - Terminal multiplexer theme
+# 5. btop.theme - System monitor theme
+# 6. neovim.lua - Editor theme
+# 7. vscode.sh - VS Code theme installation
+# 8. background.jpg - Wallpaper (JPEG or PNG, recommended 4K resolution)
+#
+# OPTIONAL FILES:
+# 9. tophat.sh - Tophat GNOME extension theme
+# 10. screenshot.png - Preview image for GUI
+#
+# =============================================================================
+# EXAMPLE:
+# =============================================================================
+#
+# NAME: Nord Aurora
+# DESCRIPTION: Arctic, north-bluish color palette with frost and aurora colors
+# AUTHOR: Arctic Ice Studio
+# HOMEPAGE: https://www.nordtheme.com
+# VERSION: 0.2.0
+# COLORS: polar night, snow storm, frost, aurora
+# ACCENT: blue
+# STYLE: dark
+# SCREENSHOT: nord-preview.png
+#
+# =============================================================================
+

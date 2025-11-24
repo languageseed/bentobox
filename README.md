@@ -1,32 +1,107 @@
 # Bentobox
 
-**A curated Ubuntu 24.04+ development environment optimized for professional developers.**
+**A curated Ubuntu 24.04+ development environment with a beautiful GUI installer.**
 
-Bentobox is a custom fork of [Omakub](https://github.com/basecamp/omakub) by DHH, tailored for modern development workflows with containerization, AI capabilities, and remote work tools.
+Bentobox is a custom fork of [Omakub](https://github.com/basecamp/omakub) by DHH, optimized for professional developers with modern tools, AI capabilities, security hardening, and an intuitive graphical installer.
 
 ## 🚀 Quick Start
 
-Transform a fresh Ubuntu 24.04+ installation into a fully-configured development environment with a single command:
+### Option 1: One-Line Installation (Terminal)
+
+Transform a fresh Ubuntu 24.04+ installation with a single command:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
 ```
 
-That's it! The installation will guide you through selecting your preferred tools.
+### Option 2: GUI Installer (Recommended)
+
+For a visual, user-friendly experience:
+
+```bash
+# Install the GUI
+wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
+cd ~/.local/share/omakub
+bash install-gui.sh
+
+# Launch Bentobox GUI
+bentobox-gui
+```
+
+The GUI provides:
+- 📦 Visual component selection
+- 🎨 Desktop theme customization
+- 🔒 Security configuration
+- 🖼️ Wallpaper browser
+- ▶️ Live installation progress
+- 📊 Status dashboard
 
 ---
 
 ## ✨ What is Bentobox?
 
-Bentobox takes the excellent foundation of Omakub and refines it for professional developers who need:
+Bentobox takes the excellent foundation of Omakub and enhances it for professional developers who need:
 
+- 🖥️ **Beautiful GUI Installer** - Point-and-click configuration with live progress
+- 🔒 **Security Hardening** - UFW firewall, Fail2Ban, SSH hardening, automatic updates
 - 🐳 **Modern Container Management** - Portainer web UI instead of CLI tools
 - 🤖 **Local AI Development** - OpenWebUI + Ollama for running LLMs locally
 - 🌐 **Secure Remote Access** - Tailscale VPN for accessing your dev environment anywhere
 - 🪟 **Windows App Integration** - WinBoat for running Windows apps seamlessly on Linux
-- 🖱️ **Multi-Computer Workflows** - Barrier/Synergy for KVM sharing across machines
-- 🎨 **Beautiful Wallpapers** - 7 curated Pexels wallpapers included
-- 🎯 **Focused Tool Selection** - Streamlined to essential development tools
+- 🎨 **Beautiful Themes** - 10+ curated themes with matching wallpapers
+- 🎯 **Python Orchestration** - Robust installation with state management and error handling
+
+---
+
+## 🖥️ GUI Installer
+
+Bentobox features a modern GTK-based graphical installer with 7 tabs:
+
+### 👋 Welcome
+- Overview of features
+- Quick start instructions
+- Direct link to component selection
+
+### 📦 Components
+Select from curated applications:
+- **Desktop Apps**: 1Password, Cursor, Tailscale, Brave, Chrome, GIMP, OBS Studio, RubyMine, Sublime Text, WinBoat
+- **Languages**: Node.js, Python, Ruby on Rails, Go, PHP, Elixir, Rust, Java
+- **Containers**: Portainer, OpenWebUI, Ollama
+
+### 🎨 Desktop
+Customize your environment:
+- **Themes**: Tokyo Night, Catppuccin, Everforest, Gruvbox, Kanagawa, Nord, Rose Pine, and more
+- **Fonts**: Cascadia Code (Nerd Font), iA Writer Mono
+- **GNOME Settings**: Configure shortcuts, extensions, and appearance
+- **Quick Actions**: Apply themes and fonts instantly
+
+### 🔒 Security
+Optional security hardening:
+- **Firewall**: Enable UFW with custom rules
+- **System Hardening**: Automatic security updates, Fail2Ban, root login restrictions
+- **SSH Security**: Key-only authentication, custom port
+- **Privacy**: Disable error reporting and telemetry
+- **Security Audit**: Check current security status
+
+### 🖼️ Wallpapers
+- Browse included wallpaper collection
+- Preview thumbnails
+- Apply wallpapers instantly
+
+### ▶️ Install
+- Live terminal output
+- Clear completion message
+- No annoying popups
+
+### 📊 Status
+- View installation state
+- Component status overview
+- Refresh on demand
+
+### ⚙️ Maintenance
+- Comprehensive uninstall option
+- Triple confirmation for safety
+- Complete system reset
 
 ---
 
@@ -36,15 +111,17 @@ Bentobox takes the excellent foundation of Omakub and refines it for professiona
 
 | Feature | Omakub | Bentobox |
 |---------|---------|----------|
+| **Installer** | Terminal only | GUI + Terminal |
+| **Orchestration** | Pure Bash | Python + Bash |
+| **Security Options** | No | Yes (UFW, Fail2Ban, SSH hardening) |
 | **Focus** | General purpose | Professional development |
-| **Optional Apps** | 10+ choices | 6 focused choices |
 | **Container UI** | lazydocker (CLI) | Portainer (Web UI) |
 | **Databases** | MySQL/Redis/PostgreSQL | Removed (use containers as needed) |
 | **AI Ready** | No | Yes (OpenWebUI + Ollama) |
 | **Remote Access** | No | Yes (Tailscale built-in) |
-| **KVM Sharing** | No | Yes (Barrier/Synergy) |
 | **Windows Apps** | No | Yes (WinBoat - run Windows apps seamlessly) |
-| **Entertainment** | Games, music apps | Removed for focus |
+| **Themes** | 1 (Tokyo Night) | 10+ curated themes |
+| **State Management** | No | Yes (resume failed installations) |
 
 ### Removed Applications
 
@@ -274,14 +351,54 @@ winboat
 
 ---
 
-## 🛠️ Customization
+## 🛠️ Customization & Extensions
 
-Bentobox is built to be customizable. You can:
+Bentobox is built to be highly extensible. You can easily add your own applications, themes, and customizations!
 
-- Add your own wallpapers to `wallpaper/` directory
-- Modify optional apps in `install/first-run-choices.sh`
-- Add custom containers in `install/terminal/select-dev-storage.sh`
-- Customize themes in `themes/` directory
+### 🎁 Add Your Own Extensions
+
+Bentobox uses a simple metadata-based system that makes it easy to add new packages:
+
+```bash
+# Copy the template
+cp .templates/app-template.sh install/desktop/optional/app-slack.sh
+
+# Edit metadata and installation commands
+nano install/desktop/optional/app-slack.sh
+
+# Make executable
+chmod +x install/desktop/optional/app-slack.sh
+
+# That's it! Your app will appear in the GUI automatically
+```
+
+### 📖 Extension Documentation
+
+- **`EXTENSION_FORMAT_SPEC.md`** - Complete technical specification
+- **`EXTENSION_DEVELOPER_GUIDE.md`** - Quick start guide with examples
+- **`.templates/`** - Ready-to-use templates for apps and themes
+
+### 🎨 Create Your Own Themes
+
+```bash
+# Create theme directory
+mkdir themes/your-theme
+
+# Copy template and reference files
+cp .templates/theme-metadata.txt themes/your-theme/metadata.txt
+cp themes/tokyo-night/* themes/your-theme/
+
+# Customize colors and wallpaper
+# Your theme will appear in the GUI automatically
+```
+
+### 🤝 Share Your Extensions
+
+Created something useful? Share it with the community!
+1. Test your extension thoroughly
+2. Follow the extension format specification
+3. Submit a pull request
+4. Help others build better development environments
 
 ---
 
@@ -360,12 +477,31 @@ gsettings set org.gnome.desktop.background picture-uri "file://$HOME/.local/shar
 
 ## 📚 Documentation
 
-Additional documentation available in the repository:
+Comprehensive documentation is available in the `docs/` directory:
 
-- `TESTING_GUIDE.md` - Complete testing procedures
-- `wallpaper/LICENSE.md` - Wallpaper licensing and credits
-- `wallpaper/README.md` - Wallpaper usage guide
-- `testing/winboat/` - WinBoat testing documentation and guides
+### Quick Links
+- **[Documentation Index](docs/README.md)** - Complete documentation overview
+- **[Extension System](docs/extensions/README.md)** - Add your own packages and themes
+- **[Developer Guide](docs/extensions/DEVELOPER_GUIDE.md)** - Create extensions in 5 minutes
+- **[Architecture Guide](docs/architecture/COMPARISON.md)** - Bentobox vs Omakub comparison
+- **[Testing Guide](docs/development/TESTING_GUIDE.md)** - Testing procedures
+
+### Feature Documentation
+- **[GUI Guide](docs/features/GUI.md)** - Using the desktop installer
+- **[Installation Modes](docs/features/INSTALLATION_MODES.md)** - Interactive, unattended, AI modes
+- **[Themes](docs/features/THEMES.md)** - Theme system and customization
+- **[Fonts](docs/features/FONTS.md)** - Font configuration
+- **[Uninstall Guide](docs/features/UNINSTALL.md)** - Complete removal
+- **[Troubleshooting](docs/troubleshooting/)** - Common issues and solutions
+
+### WinBoat Documentation
+- **[WinBoat Overview](docs/winboat/README.md)** - Run Windows apps on Linux
+- **[WinBoat Testing](docs/winboat/TESTING_GUIDE.md)** - Testing procedures
+- **[WinBoat Issues](docs/winboat/ISSUES.md)** - Known issues and workarounds
+- **[WinBoat Integration](docs/winboat/INTEGRATION.md)** - Bentobox integration details
+
+### Project-Specific Documentation
+- **[Wallpaper Info](wallpaper/README.md)** - Wallpaper licensing and credits
 
 ---
 
@@ -429,3 +565,4 @@ wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh
 ```
 
 Enjoy your perfectly curated Ubuntu development environment! 🎉
+

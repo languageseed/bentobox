@@ -1,11 +1,34 @@
 #!/bin/bash
 
-# Install default programming languages
-if [[ -v OMAKUB_FIRST_RUN_LANGUAGES ]]; then
+# Load languages from config file if it exists
+CONFIG_FILE="$HOME/.bentobox-config.yaml"
+
+if [ -f "$CONFIG_FILE" ]; then
+	# Parse YAML config for languages
+	languages=$(python3 -c "
+import yaml
+with open('$CONFIG_FILE') as f:
+    config = yaml.safe_load(f)
+    langs = config.get('languages', [])
+    print(' '.join(langs))
+" 2>/dev/null)
+	
+	if [ -z "$languages" ]; then
+		echo "ℹ️  No languages selected in config, skipping..."
+		exit 0
+	fi
+	echo "📦 Using languages from config: $languages"
+elif [[ -v OMAKUB_FIRST_RUN_LANGUAGES ]]; then
   languages=$OMAKUB_FIRST_RUN_LANGUAGES
 else
-  AVAILABLE_LANGUAGES=("Ruby on Rails" "Node.js" "Go" "PHP" "Python" "Elixir" "Rust" "Java")
-  languages=$(gum choose "${AVAILABLE_LANGUAGES[@]}" --no-limit --height 10 --header "Select programming languages")
+	# Only show interactive prompt if no config exists
+	if command -v gum &> /dev/null; then
+		AVAILABLE_LANGUAGES=("Ruby on Rails" "Node.js" "Go" "PHP" "Python" "Elixir" "Rust" "Java")
+		languages=$(gum choose "${AVAILABLE_LANGUAGES[@]}" --no-limit --height 10 --header "Select programming languages")
+	else
+		echo "ℹ️  No config file and gum not available, skipping language selection..."
+		exit 0
+	fi
 fi
 
 if [[ -n "$languages" ]]; then

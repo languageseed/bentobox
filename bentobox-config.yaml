@@ -67,6 +67,41 @@ containers:
 #                   kanagawa, rose-pine, osaka-jade, ristretto, matte-black
 theme: tokyo-night
 
+# Wallpaper Browser Settings
+wallpapers:
+  # Provider Configuration
+  providers:
+    pexels:
+      api_key: ""  # Get free key from: https://www.pexels.com/api/
+      enabled: true
+      default: true
+    
+    unsplash:
+      api_key: ""  # Get free key from: https://unsplash.com/developers
+      enabled: true
+    
+    4kwallpapers:
+      enabled: true
+      # No API key needed - uses web scraping
+      default_category: "nature"  # abstract, anime, cars, space, etc.
+    
+    local:
+      enabled: true
+      path: "~/Pictures/Wallpapers"  # Path to your wallpaper collection
+  
+  # Browser Settings
+  settings:
+    default_provider: "pexels"
+    cache_thumbnails: true
+    cache_directory: "~/.cache/bentobox/wallpapers"
+    thumbnail_size: 400  # pixels (width)
+    default_search: "nature mountains"
+    per_page: 15  # Number of wallpapers per page
+    
+    # Download settings
+    download_directory: "~/Pictures/Wallpapers"
+    auto_apply: true  # Automatically apply wallpaper after download
+
 # System Settings
 settings:
   # Automatically reboot after installation

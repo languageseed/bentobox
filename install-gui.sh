@@ -10,13 +10,11 @@ echo "📦 Installing Bentobox GUI..."
 # Install system dependencies
 echo "Installing GTK dependencies..."
 sudo apt update
-sudo apt install -y python3-gi gir1.2-gtk-3.0 gir1.2-vte-2.91 zenity
+sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-vte-2.91 gir1.2-gdkpixbuf-2.0 zenity
 
-# Install Python dependencies
+# Install Python dependencies (system packages for Ubuntu 24.04)
 echo "Installing Python dependencies..."
-python3 -m pip install --user pyyaml 2>/dev/null || {
-    echo "Note: PyYAML installation skipped (will install on first run if needed)"
-}
+sudo apt install -y python3-yaml python3-requests python3-bs4 python3-pil
 
 # Copy GUI launcher to /usr/local/bin
 echo "Installing launcher..."
