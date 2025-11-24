@@ -63,7 +63,7 @@ Bentobox features a modern GTK-based graphical installer with 7 tabs:
 ### 📦 Components
 Select from curated applications:
 - **Desktop Apps**: 1Password, Cursor, Tailscale, Brave, Chrome, GIMP, OBS Studio, RubyMine, Sublime Text, WinBoat, Draw.io, Blender, REAPER, Timeshift, Logseq, Mission Center, Foliate, Warp Terminal, Kooha, Portmaster, Bitwig Studio, Planify, Picture of the Day
-- **Pop!_OS Desktop**: Pop Shell, Orchis Theme, WhiteSur Theme/Icons, Tela Icons, GNOME Extensions (Dash2Dock Lite, Open Bar, Coverflow Alt-Tab, Vertical Workspaces, Clipboard Indicator)
+- **Additional Desktop Themes**: Orchis Theme, WhiteSur Theme/Icons, Tela Icons, GNOME Extensions (Dash2Dock Lite, Open Bar, Coverflow Alt-Tab, Vertical Workspaces, Clipboard Indicator)
 - **Languages**: Node.js, Python, Ruby on Rails, Go, PHP, Elixir, Rust, Java
 - **Containers**: Portainer, OpenWebUI, Ollama
 
@@ -212,8 +212,7 @@ During installation, select from:
 - **Planify** - Task and project manager
 - **Picture of the Day** - Daily wallpapers
 
-**Pop!_OS Desktop Components** (all opt-in):
-- **Pop Shell** - Tiling window manager
+**Additional Desktop Themes & Extensions** (all opt-in, Ubuntu GNOME compatible):
 - **Orchis Theme** - Modern dark GTK theme
 - **WhiteSur Theme** - macOS-like GTK theme and icons
 - **Tela Icons** - Beautiful flat icon theme

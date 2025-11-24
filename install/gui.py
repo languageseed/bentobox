@@ -140,8 +140,7 @@ class BentoboxGUI:
                 'apply_gnome_settings': self.gnome_settings_cb.get_active() if hasattr(self, 'gnome_settings_cb') else True,
                 'apply_hotkeys': self.gnome_hotkeys_cb.get_active() if hasattr(self, 'gnome_hotkeys_cb') else True,
                 'install_extensions': self.gnome_extensions_cb.get_active() if hasattr(self, 'gnome_extensions_cb') else True,
-                # Pop!_OS Desktop Components
-                'popos_pop_shell': self.popos_pop_shell_cb.get_active() if hasattr(self, 'popos_pop_shell_cb') else False,
+                # Additional Desktop Components
                 'popos_orchis_theme': self.popos_orchis_theme_cb.get_active() if hasattr(self, 'popos_orchis_theme_cb') else False,
                 'popos_whitesur_gtk': self.popos_whitesur_gtk_cb.get_active() if hasattr(self, 'popos_whitesur_gtk_cb') else False,
                 'popos_tela_icons': self.popos_tela_icons_cb.get_active() if hasattr(self, 'popos_tela_icons_cb') else False,
@@ -714,15 +713,15 @@ class BentoboxGUI:
         extensions_info.set_line_wrap(True)
         gnome_box.pack_start(extensions_info, False, False, 0)
         
-        # === POP!_OS DESKTOP CUSTOMIZATION ===
+        # === ADDITIONAL DESKTOP CUSTOMIZATION ===
         popos_label = Gtk.Label()
-        popos_label.set_markup("<b>🎨 Pop!_OS Desktop Components</b>")
+        popos_label.set_markup("<b>🎨 Additional Desktop Themes &amp; Extensions</b>")
         popos_label.set_halign(Gtk.Align.START)
         popos_label.set_margin_top(10)
         content.pack_start(popos_label, False, False, 0)
         
         popos_info = Gtk.Label()
-        popos_info.set_markup("<small><i>Optional Pop!_OS-inspired themes, icons, and extensions (not selected by default)</i></small>")
+        popos_info.set_markup("<small><i>Optional themes, icons, and extensions for Ubuntu GNOME (not selected by default)</i></small>")
         popos_info.set_halign(Gtk.Align.START)
         popos_info.set_margin_start(20)
         content.pack_start(popos_info, False, False, 0)
@@ -730,11 +729,6 @@ class BentoboxGUI:
         popos_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
         popos_box.set_margin_start(20)
         content.pack_start(popos_box, False, False, 0)
-        
-        # Pop Shell
-        self.popos_pop_shell_cb = Gtk.CheckButton(label="Pop Shell - Tiling window manager")
-        self.popos_pop_shell_cb.set_active(self.config.get('desktop', {}).get('popos_pop_shell', False))
-        popos_box.pack_start(self.popos_pop_shell_cb, False, False, 0)
         
         # Themes
         popos_themes_label = Gtk.Label()
