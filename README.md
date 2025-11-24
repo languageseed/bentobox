@@ -14,17 +14,21 @@ Transform a fresh Ubuntu 24.04+ installation with a single command:
 wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
 ```
 
+This will guide you through the installation with terminal prompts.
+
 ### Option 2: GUI Installer (Recommended)
 
-For a visual, user-friendly experience:
+For a visual, point-and-click experience, download and launch the GUI:
 
 ```bash
-# Install the GUI
+# Download Bentobox
 wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
+
+# Install GUI dependencies and launcher
 cd ~/.local/share/omakub
 bash install-gui.sh
 
-# Launch Bentobox GUI
+# Launch the GUI (from Applications menu or terminal)
 bentobox-gui
 ```
 
@@ -35,6 +39,8 @@ The GUI provides:
 - 🖼️ Wallpaper browser
 - ▶️ Live installation progress
 - 📊 Status dashboard
+
+**Note:** After using the GUI to configure your preferences, click "Start Installation" to begin. You can also find "Bentobox" in your Applications menu after running `install-gui.sh`.
 
 ---
 
