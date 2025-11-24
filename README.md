@@ -6,36 +6,12 @@ Bentobox is a custom fork of [Omakub](https://github.com/basecamp/omakub) by DHH
 
 ## 🚀 Quick Start
 
-### Option 1: Terminal Installation (Traditional)
+### Option 1: GUI Installer (Recommended)
 
-Complete installation with interactive terminal prompts:
-
-```bash
-wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
-```
-
-This downloads Bentobox and runs the terminal-based installer immediately.
-
-### Option 2: GUI Installer (Recommended)
-
-For a visual, point-and-click experience:
-
-**Step 1:** Download Bentobox (without running installation):
+One command to download and launch the visual installer:
 
 ```bash
-# Clone to the standard location
-git clone https://github.com/languageseed/bentobox.git ~/.local/share/omakub
-cd ~/.local/share/omakub
-```
-
-**Step 2:** Install and launch the GUI:
-
-```bash
-# Install GUI dependencies
-bash install-gui.sh
-
-# Launch Bentobox GUI
-bentobox-gui
+wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot-gui.sh | bash
 ```
 
 The GUI provides:
@@ -46,7 +22,17 @@ The GUI provides:
 - ▶️ Live installation progress
 - 📊 Status dashboard
 
-**Note:** Configure your preferences in the GUI, then click "Start Installation" to begin. The Bentobox launcher will also appear in your Applications menu.
+Configure your preferences, then click "Start Installation" to begin.
+
+### Option 2: Terminal Installation
+
+Complete installation with interactive terminal prompts:
+
+```bash
+wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
+```
+
+This runs the traditional terminal-based installer with text prompts.
 
 ---
 
