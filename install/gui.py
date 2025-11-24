@@ -1446,6 +1446,10 @@ class BentoboxGUI:
     def apply_themes_worker(self):
         """Apply themes in background"""
         try:
+            # Suppress GTK warnings in subprocess environment
+            env = os.environ.copy()
+            env['G_MESSAGES_DEBUG'] = ''
+            
             # Install fonts
             GLib.idle_add(self.append_to_terminal, "📝 Installing fonts...\n")
             fonts_script = self.omakub_path / 'install/desktop/fonts.sh'
@@ -1454,7 +1458,8 @@ class BentoboxGUI:
                     ['bash', str(fonts_script)],
                     capture_output=True,
                     text=True,
-                    timeout=300
+                    timeout=300,
+                    env=env
                 )
                 GLib.idle_add(self.append_to_terminal, result.stdout)
                 if result.stderr:
@@ -1469,7 +1474,8 @@ class BentoboxGUI:
                     ['bash', str(configure_script)],
                     capture_output=True,
                     text=True,
-                    timeout=60
+                    timeout=60,
+                    env=env
                 )
                 GLib.idle_add(self.append_to_terminal, result.stdout)
                 if result.stderr:
@@ -1482,7 +1488,7 @@ class BentoboxGUI:
             if theme_script.exists():
                 result = subprocess.run(
                     ['bash', str(theme_script)],
-                    env={**os.environ, 'OMAKUB_PATH': str(self.omakub_path)},
+                    env={**env, 'OMAKUB_PATH': str(self.omakub_path)},
                     capture_output=True,
                     text=True,
                     timeout=60
@@ -1500,7 +1506,8 @@ class BentoboxGUI:
                     ['bash', str(settings_script)],
                     capture_output=True,
                     text=True,
-                    timeout=60
+                    timeout=60,
+                    env=env
                 )
                 GLib.idle_add(self.append_to_terminal, result.stdout)
                 if result.stderr:
@@ -1513,7 +1520,7 @@ class BentoboxGUI:
             if wallpaper_script.exists():
                 result = subprocess.run(
                     ['bash', str(wallpaper_script)],
-                    env={**os.environ, 'OMAKUB_PATH': str(self.omakub_path)},
+                    env={**env, 'OMAKUB_PATH': str(self.omakub_path)},
                     capture_output=True,
                     text=True,
                     timeout=60
@@ -1892,6 +1899,11 @@ def main():
         print("❌ No display detected. GUI requires a graphical session.")
         print("   Run this from the desktop, not over SSH.")
         sys.exit(1)
+    
+    # Suppress GTK warnings about markup parsing (non-fatal)
+    import warnings
+    warnings.filterwarnings("ignore")
+    os.environ['G_MESSAGES_DEBUG'] = ''
     
     # Check dependencies
     try:
