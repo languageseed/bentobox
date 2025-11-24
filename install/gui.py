@@ -475,6 +475,7 @@ class BentoboxGUI:
             ("logseq", "Logseq"),
             ("mission-center", "Mission Center"),
             ("obs-studio", "OBS Studio"),
+            ("picture-of-the-day", "Picture of the Day"),
             ("planify", "Planify (Task Manager)"),
             ("portmaster", "Portmaster (Firewall)"),
             ("reaper", "REAPER (DAW)"),
