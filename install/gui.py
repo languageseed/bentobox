@@ -463,6 +463,7 @@ class BentoboxGUI:
         
         apps = [
             ("1password", "1Password"),
+            ("bitwig", "Bitwig Studio (DAW)"),
             ("blender", "Blender"),
             ("brave", "Brave Browser"),
             ("chrome", "Chrome"),
