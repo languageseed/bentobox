@@ -981,6 +981,14 @@ class BentoboxGUI:
         self.terminal = Vte.Terminal()
         self.terminal.set_font(Pango.FontDescription("Monospace 10"))
         self.terminal.set_scroll_on_output(True)
+        self.terminal.set_scrollback_lines(10000)  # Keep more history
+        
+        # Enable word wrapping for long lines
+        self.terminal.set_rewrap_on_resize(True)
+        
+        # Set reasonable column width (80 chars is standard)
+        self.terminal.set_size(80, 24)
+        
         scrolled.add(self.terminal)
         
         return box
@@ -990,7 +998,10 @@ class BentoboxGUI:
         self.terminal.reset(True, True)
     
     def append_to_terminal(self, text):
-        """Append text to the terminal"""
+        """Append text to the terminal with proper line handling"""
+        # Ensure text ends with newline for proper formatting
+        if text and not text.endswith('\n'):
+            text = text + '\n'
         self.terminal.feed(text.encode('utf-8'))
     
     def build_status_tab(self) -> Gtk.Box:

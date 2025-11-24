@@ -15,14 +15,14 @@ mkdir -p "$PICTURES_WALLPAPERS"
 mkdir -p "$BACKGROUNDS_DIR"
 
 if [ ! -f "$SOURCE_WALLPAPER" ]; then
-    echo "❌ ERROR: Source wallpaper not found at $SOURCE_WALLPAPER"
+    echo "❌ ERROR: Source wallpaper not found"
     echo "   Checking wallpaper directory:"
     ls -la "$OMAKUB_PATH/wallpaper/" 2>/dev/null || echo "   Directory doesn't exist!"
     echo "⚠️  Continuing without wallpaper..."
     exit 0
 fi
 
-echo "✅ Source wallpaper found: $SOURCE_WALLPAPER"
+echo "✅ Source wallpaper found"
 echo "📦 Copying wallpapers to persistent locations..."
 
 # Copy to user Pictures directory (primary persistent location)
@@ -36,25 +36,27 @@ echo "   ✓ Copied to ~/.local/share/backgrounds/"
 # Copy all wallpapers from the collection
 echo "📦 Copying Bentobox wallpaper collection..."
 if [ -d "$OMAKUB_PATH/wallpaper" ]; then
+    WALLPAPER_COUNT=0
     for wallpaper in "$OMAKUB_PATH/wallpaper"/*.jpg "$OMAKUB_PATH/wallpaper"/*.png; do
         if [ -f "$wallpaper" ]; then
             filename=$(basename "$wallpaper")
             cp "$wallpaper" "$PICTURES_WALLPAPERS/$filename"
             cp "$wallpaper" "$BACKGROUNDS_DIR/$filename"
+            ((WALLPAPER_COUNT++))
         fi
     done
-    echo "   ✓ Copied entire wallpaper collection"
+    echo "   ✓ Copied $WALLPAPER_COUNT wallpapers"
 fi
 
 # Use the persistent location for setting wallpaper
 WALLPAPER_PATH="$PICTURES_WALLPAPERS/$WALLPAPER_NAME"
 
-echo "🎨 Setting wallpaper from persistent location..."
+echo "🎨 Setting wallpaper..."
 gsettings set org.gnome.desktop.background picture-uri "file://$WALLPAPER_PATH"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$WALLPAPER_PATH"
 gsettings set org.gnome.desktop.background picture-options 'zoom'
 
 echo "✅ Wallpaper set successfully!"
-echo "   📁 Wallpapers saved to: $PICTURES_WALLPAPERS"
-echo "   🔄 Wallpapers will persist across Bentobox updates"
+echo "   📁 Saved to: ~/Pictures/Wallpapers/"
+echo "   🔄 Wallpapers will persist across updates"
 
