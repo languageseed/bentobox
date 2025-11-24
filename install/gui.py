@@ -1109,41 +1109,56 @@ class BentoboxGUI:
     
     def on_apply_wallpaper(self, button, wallpaper_path):
         """Apply selected wallpaper"""
+        # Switch to Install tab
+        self.notebook.set_current_page(5)
+        
+        # Clear terminal and show header
+        self.clear_terminal()
+        self.append_to_terminal("🖼️  Applying Wallpaper\n")
+        self.append_to_terminal("=" * 50 + "\n\n")
+        
+        # Get wallpaper name
+        wallpaper_name = wallpaper_path.stem.replace('pexels-', '').replace('-', ' ').title()
+        self.append_to_terminal(f"Selected wallpaper: {wallpaper_name}\n")
+        self.append_to_terminal(f"Path: {wallpaper_path}\n\n")
+        
+        # Run in thread
+        thread = threading.Thread(target=self.apply_wallpaper_worker, args=(wallpaper_path,))
+        thread.daemon = True
+        thread.start()
+    
+    def apply_wallpaper_worker(self, wallpaper_path):
+        """Apply wallpaper in background"""
         try:
             # Set GNOME wallpaper
-            subprocess.run([
+            GLib.idle_add(self.append_to_terminal, "Setting wallpaper for light mode...\n")
+            result = subprocess.run([
                 'gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri',
                 f'file://{wallpaper_path}'
-            ], check=True)
+            ], capture_output=True, text=True)
             
-            subprocess.run([
+            if result.returncode == 0:
+                GLib.idle_add(self.append_to_terminal, "✅ Light mode wallpaper set\n\n")
+            else:
+                GLib.idle_add(self.append_to_terminal, f"❌ Error: {result.stderr}\n")
+            
+            GLib.idle_add(self.append_to_terminal, "Setting wallpaper for dark mode...\n")
+            result = subprocess.run([
                 'gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri-dark',
                 f'file://{wallpaper_path}'
-            ], check=True)
+            ], capture_output=True, text=True)
             
-            # Show success message
-            dialog = Gtk.MessageDialog(
-                transient_for=self,
-                flags=0,
-                message_type=Gtk.MessageType.INFO,
-                buttons=Gtk.ButtonsType.OK,
-                text="Wallpaper Applied"
-            )
-            dialog.format_secondary_text(f"Your wallpaper has been set successfully!")
-            dialog.run()
-            dialog.destroy()
+            if result.returncode == 0:
+                GLib.idle_add(self.append_to_terminal, "✅ Dark mode wallpaper set\n\n")
+            else:
+                GLib.idle_add(self.append_to_terminal, f"❌ Error: {result.stderr}\n")
+            
+            # Show completion message
+            GLib.idle_add(self.append_to_terminal, "\n🎉 Wallpaper applied successfully!\n")
+            GLib.idle_add(self.append_to_terminal, "=" * 50 + "\n")
             
         except Exception as e:
-            dialog = Gtk.MessageDialog(
-                transient_for=self,
-                flags=0,
-                message_type=Gtk.MessageType.ERROR,
-                buttons=Gtk.ButtonsType.OK,
-                text="Failed to Apply Wallpaper"
-            )
-            dialog.format_secondary_text(str(e))
-            dialog.run()
-            dialog.destroy()
+            GLib.idle_add(self.append_to_terminal, f"\n❌ Error applying wallpaper: {str(e)}\n")
         card.pack_start(title_label, False, False, 0)
         
         # Photographer
