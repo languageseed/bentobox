@@ -472,6 +472,7 @@ class BentoboxGUI:
             ("rubymine", "RubyMine"),
             ("sublime-text", "Sublime Text"),
             ("winboat", "WinBoat"),
+            ("download-windows10-iso", "Windows 10 ISO Download"),
         ]
         
         apps_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
