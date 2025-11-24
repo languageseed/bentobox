@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Bentobox Installer
+Comment=Install and manage Bentobox components
+Exec=/usr/local/bin/bentobox-gui
+Icon=system-software-install
+Terminal=false
+Categories=System;Settings;
+Keywords=install;setup;bentobox;configuration;
+StartupNotify=true
+

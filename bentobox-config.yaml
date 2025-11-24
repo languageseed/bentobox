@@ -1,0 +1,175 @@
+# Bentobox Installation Configuration
+# This file controls unattended/automated installations
+# 
+# Usage:
+#   1. Copy this file to ~/.bentobox-config.yaml (or specify with BENTOBOX_CONFIG)
+#   2. Customize your preferences below
+#   3. Run installation - it will read this config instead of prompting
+#
+# For interactive install: Delete this file or don't set BENTOBOX_CONFIG
+# For unattended install: Set BENTOBOX_CONFIG=/path/to/this/file
+
+---
+# Installation Mode
+# Options: interactive, unattended, ai
+# - interactive: Prompts user with gum (default if no config)
+# - unattended: Uses this config file, no prompts
+# - ai: Same as unattended, optimized for AI-driven installs
+mode: unattended
+
+# User Information
+# Required for git configuration and system setup
+user:
+  name: "Your Full Name"
+  email: "your.email@example.com"
+
+# Optional Desktop Applications
+# Only applies when running GNOME desktop
+# Available: 1password, Barrier, Tailscale, WinBoat, Sublime-Text, Windows-ISO
+desktop:
+  optional_apps:
+    - 1password
+    - Barrier
+    - Tailscale
+    # - WinBoat        # Uncomment to install WinBoat
+    # - Sublime-Text   # Uncomment to install Sublime Text
+    # - Windows-ISO    # Uncomment to pre-download Windows 10 ISO
+  
+  # Web Apps (PWAs)
+  # Available: Chat GPT, Google Photos, Google Contacts, Tailscale
+  web_apps:
+    - "Chat GPT"
+    # - "Google Photos"
+    # - "Google Contacts"
+    # - "Tailscale"
+
+# Programming Languages
+# Available: Ruby on Rails, Node.js, Go, PHP, Python, Elixir, Rust, Java
+languages:
+  - "Node.js"
+  - "Python"
+  # - "Ruby on Rails"
+  # - "Go"
+  # - "PHP"
+  # - "Elixir"
+  # - "Rust"
+  # - "Java"
+
+# Docker Containers
+# Available: Portainer, OpenWebUI, Ollama
+containers:
+  - Portainer
+  - OpenWebUI
+  # - Ollama  # Uncomment to install local LLM server
+
+# Theme Selection
+# Available themes: tokyo-night, nord, catppuccin, gruvbox, everforest, 
+#                   kanagawa, rose-pine, osaka-jade, ristretto, matte-black
+theme: tokyo-night
+
+# System Settings
+settings:
+  # Automatically reboot after installation
+  auto_reboot: false
+  
+  # Skip confirmation prompts
+  skip_confirmations: true
+  
+  # Verbose output during installation
+  verbose: false
+  
+  # Set wallpaper (filename from wallpaper/ directory)
+  wallpaper: "pexels-pok-rie-33563-2049422.jpg"
+  
+  # Pre-flight check settings
+  skip_preflight: false           # Skip pre-flight checks entirely
+  stop_on_warnings: false         # Stop installation if warnings found
+  auto_upgrade: false             # Automatically run apt upgrade if needed
+
+# AI Assistant Settings (when mode: ai)
+# These help AI assistants understand the installation context
+ai:
+  # Context for AI to understand the installation purpose
+  purpose: "development environment setup"
+  
+  # Allow AI to make reasonable substitutions if exact matches unavailable
+  allow_substitutions: true
+  
+  # Validation: AI should report what was installed
+  report_installed: true
+
+# Advanced Options
+advanced:
+  # Custom OMAKUB_PATH (default: $HOME/.local/share/omakub)
+  # installation_path: "/opt/bentobox"
+  
+  # Skip certain installation phases
+  skip:
+    # - terminal    # Skip terminal setup
+    # - desktop     # Skip desktop setup
+    # - languages   # Skip language installation
+    # - containers  # Skip container deployment
+  
+  # Environment variables to set during installation
+  env:
+    # CUSTOM_VAR: "value"
+
+# Examples and Presets
+# Uncomment a preset section below to use it
+
+# --- Preset: Minimal Developer ---
+# desktop:
+#   optional_apps: []
+#   web_apps: []
+# languages:
+#   - "Node.js"
+# containers:
+#   - Portainer
+
+# --- Preset: Full Stack Developer ---
+# desktop:
+#   optional_apps:
+#     - 1password
+#     - Tailscale
+# languages:
+#   - "Node.js"
+#   - "Python"
+#   - "Go"
+# containers:
+#   - Portainer
+#   - OpenWebUI
+#   - Ollama
+
+# --- Preset: AI Development ---
+# desktop:
+#   optional_apps:
+#     - Tailscale
+# languages:
+#   - "Python"
+# containers:
+#   - Portainer
+#   - OpenWebUI
+#   - Ollama
+
+# --- Preset: Ruby on Rails ---
+# desktop:
+#   optional_apps:
+#     - 1password
+# languages:
+#   - "Ruby on Rails"
+#   - "Node.js"
+# containers:
+#   - Portainer
+
+# --- Preset: Windows App Developer ---
+# desktop:
+#   optional_apps:
+#     - WinBoat
+#     - Windows-ISO
+#     - Tailscale
+# languages:
+#   - "Node.js"
+#   - "Python"
+# containers:
+#   - Portainer
+

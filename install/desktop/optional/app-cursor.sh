@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if Cursor should be skipped (already installed)
+if [ "$SKIP_CURSOR" = "true" ]; then
+    echo "✓ Cursor already installed, skipping..."
+    exit 0
+fi
+
 cd /tmp
 curl -L "https://www.cursor.com/api/download?platform=linux-x64&releaseTrack=stable" | jq -r '.downloadUrl' | xargs curl -L -o cursor.appimage
 sudo mv cursor.appimage /opt/cursor.appimage

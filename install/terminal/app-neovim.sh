@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if Neovim should be skipped (already installed)
+if [ "$SKIP_NEOVIM" = "true" ]; then
+    echo "✓ Neovim already installed, skipping..."
+    exit 0
+fi
+
 cd /tmp
 wget -O nvim.tar.gz "https://github.com/neovim/neovim/releases/download/stable/nvim-linux-x86_64.tar.gz"
 tar -xf nvim.tar.gz

@@ -12,42 +12,69 @@ if [[ -n "$containers" ]]; then
 	for container in $containers; do
 		case $container in
 		Portainer)
-			echo "Deploying Portainer (Docker Management UI)..."
-			sudo docker volume create portainer_data
-			sudo docker run -d \
-				--restart unless-stopped \
-				-p "127.0.0.1:9000:9000" \
-				-p "127.0.0.1:9443:9443" \
-				--name=portainer \
-				-v /var/run/docker.sock:/var/run/docker.sock \
-				-v portainer_data:/data \
-				portainer/portainer-ce:latest
-			echo "✅ Portainer installed! Access at: http://localhost:9000 or https://localhost:9443"
+			if [ "$SKIP_PORTAINER" = "true" ]; then
+				echo "✓ Portainer already running, skipping..."
+			else
+				# Check if container already exists (even if not running)
+				if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "^portainer$"; then
+					echo "✓ Portainer container already exists, skipping..."
+				else
+					echo "Deploying Portainer (Docker Management UI)..."
+					sudo docker volume create portainer_data 2>/dev/null || true
+					sudo docker run -d \
+						--restart unless-stopped \
+						-p "127.0.0.1:9000:9000" \
+						-p "127.0.0.1:9443:9443" \
+						--name=portainer \
+						-v /var/run/docker.sock:/var/run/docker.sock \
+						-v portainer_data:/data \
+						portainer/portainer-ce:latest
+					echo "✅ Portainer installed! Access at: http://localhost:9000 or https://localhost:9443"
+				fi
+			fi
 			;;
 		OpenWebUI)
-			echo "Deploying OpenWebUI (AI Chat Interface)..."
-			sudo docker volume create open-webui
-			sudo docker run -d \
-				--restart unless-stopped \
-				-p "127.0.0.1:3000:8080" \
-				--name=open-webui \
-				-v open-webui:/app/backend/data \
-				-e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
-				--add-host=host.docker.internal:host-gateway \
-				ghcr.io/open-webui/open-webui:main
-			echo "✅ OpenWebUI installed! Access at: http://localhost:3000"
+			if [ "$SKIP_OPENWEBUI" = "true" ]; then
+				echo "✓ OpenWebUI already running, skipping..."
+			else
+				# Check if container already exists (even if not running)
+				if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "^open-webui$"; then
+					echo "✓ OpenWebUI container already exists, skipping..."
+				else
+					echo "Deploying OpenWebUI (AI Chat Interface)..."
+					sudo docker volume create open-webui 2>/dev/null || true
+					sudo docker run -d \
+						--restart unless-stopped \
+						-p "127.0.0.1:3000:8080" \
+						--name=open-webui \
+						-v open-webui:/app/backend/data \
+						-e OLLAMA_BASE_URL=http://host.docker.internal:11434 \
+						--add-host=host.docker.internal:host-gateway \
+						ghcr.io/open-webui/open-webui:main
+					echo "✅ OpenWebUI installed! Access at: http://localhost:3000"
+				fi
+			fi
 			;;
 		Ollama)
-			echo "Deploying Ollama (Local LLM Server)..."
-			sudo docker volume create ollama
-			sudo docker run -d \
-				--restart unless-stopped \
-				-p "127.0.0.1:11434:11434" \
-				--name=ollama \
-				-v ollama:/root/.ollama \
-				ollama/ollama:latest
-			echo "✅ Ollama installed! Running at: http://localhost:11434"
-			echo "   Run 'docker exec -it ollama ollama pull llama3.2' to download a model"
+			if [ "$SKIP_OLLAMA" = "true" ]; then
+				echo "✓ Ollama already running, skipping..."
+			else
+				# Check if container already exists (even if not running)
+				if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q "^ollama$"; then
+					echo "✓ Ollama container already exists, skipping..."
+				else
+					echo "Deploying Ollama (Local LLM Server)..."
+					sudo docker volume create ollama 2>/dev/null || true
+					sudo docker run -d \
+						--restart unless-stopped \
+						-p "127.0.0.1:11434:11434" \
+						--name=ollama \
+						-v ollama:/root/.ollama \
+						ollama/ollama:latest
+					echo "✅ Ollama installed! Running at: http://localhost:11434"
+					echo "   Run 'docker exec -it ollama ollama pull llama3.2' to download a model"
+				fi
+			fi
 			;;
 		esac
 	done

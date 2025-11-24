@@ -2,6 +2,12 @@
 # WinBoat - Run Windows Apps on Linux ("Reverse WSL")
 # BETA software - Advanced users only
 
+# Check if WinBoat should be skipped (already installed)
+if [ "$SKIP_WINBOAT" = "true" ]; then
+    echo "✓ WinBoat already installed, skipping..."
+    exit 0
+fi
+
 echo "Installing WinBoat (Run Windows apps on Linux)..."
 
 # Install prerequisites (Docker is already installed via terminal/docker.sh)

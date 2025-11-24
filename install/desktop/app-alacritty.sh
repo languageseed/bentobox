@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if Alacritty should be skipped (already installed)
+if [ "$SKIP_ALACRITTY" = "true" ]; then
+    echo "✓ Alacritty already installed, skipping..."
+    exit 0
+fi
+
 # Alacritty is a GPU-powered and highly extensible terminal. See https://alacritty.org/
 sudo apt install -y alacritty
 mkdir -p ~/.config/alacritty

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if Docker should be skipped (already installed)
+if [ "$SKIP_DOCKER" = "true" ]; then
+    echo "✓ Docker already installed, skipping..."
+    exit 0
+fi
+
 # Add the official Docker repo
 if [ ! -f /etc/apt/sources.list.d/docker.list ]; then
     [ -f /etc/apt/keyrings/docker.asc ] && sudo rm /etc/apt/keyrings/docker.asc

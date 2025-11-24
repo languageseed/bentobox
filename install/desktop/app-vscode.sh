@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if VS Code should be skipped (already installed)
+if [ "$SKIP_VSCODE" = "true" ]; then
+    echo "✓ VS Code already installed, skipping..."
+    exit 0
+fi
+
 if [ ! -f /etc/apt/keyrings/packages.microsoft.gpg ] || [ ! -f /usr/share/keyrings/microsoft.gpg ]; then
   [ -f /etc/apt/keyrings/packages.microsoft.gpg ] && sudo rm /etc/apt/keyrings/packages.microsoft.gpg
   cd /tmp
@@ -16,5 +22,5 @@ sudo apt install -y code
 mkdir -p ~/.config/Code/User
 cp $OMAKUB_PATH/configs/vscode.json ~/.config/Code/User/settings.json
 
-# Install default supported themes
-code --install-extension enkia.tokyo-night
+# Install default supported themes (may crash over SSH, so wrap carefully)
+(code --install-extension enkia.tokyo-night 2>/dev/null) || echo "⚠️  VS Code extension installation skipped (requires graphical session)"

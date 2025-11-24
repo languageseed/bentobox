@@ -1,5 +1,22 @@
 #!/bin/bash
 
+# Check if we're in an interactive GNOME session
+# Extensions require browser popups and can't be installed over SSH or in unattended mode
+if [ -z "$DISPLAY" ] && [ -z "$WAYLAND_DISPLAY" ]; then
+    echo "⏭️  Skipping GNOME extensions (no display available)"
+    echo "   Run this script from the desktop session to install extensions:"
+    echo "   bash $OMAKUB_PATH/install/desktop/set-gnome-extensions.sh"
+    exit 0
+fi
+
+if [ "$BENTOBOX_MODE" = "unattended" ] || [ "$BENTOBOX_AI_MODE" = "true" ]; then
+    echo "⏭️  Skipping GNOME extensions in unattended mode"
+    echo "   Extensions require interactive browser popups"
+    echo "   To install manually, run from desktop:"
+    echo "   bash $OMAKUB_PATH/install/desktop/set-gnome-extensions.sh"
+    exit 0
+fi
+
 sudo apt install -y gnome-shell-extension-manager gir1.2-gtop-2.0 gir1.2-clutter-1.0
 pipx install gnome-extensions-cli --system-site-packages
 

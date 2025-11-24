@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if command -v ulauncher &> /dev/null; then
+    echo "✓ Ulauncher already installed, skipping..."
+    exit 0
+fi
+
 sudo add-apt-repository universe -y
 sudo add-apt-repository ppa:agornostal/ulauncher -y
 sudo apt update

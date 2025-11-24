@@ -12,12 +12,20 @@ if [[ -n "$languages" ]]; then
   for language in $languages; do
     case $language in
     Ruby)
-      mise use --global ruby@latest
-      mise settings add idiomatic_version_file_enable_tools ruby
-      mise x ruby -- gem install rails --no-document
+      if [ "$SKIP_RUBY" = "true" ]; then
+        echo "✓ Ruby already installed, skipping mise installation..."
+      else
+        mise use --global ruby@latest
+        mise settings add idiomatic_version_file_enable_tools ruby
+        mise x ruby -- gem install rails --no-document
+      fi
       ;;
     Node.js)
-      mise use --global node@lts
+      if [ "$SKIP_NODEJS" = "true" ]; then
+        echo "✓ Node.js already installed, skipping mise installation..."
+      else
+        mise use --global node@lts
+      fi
       ;;
     Go)
       mise use --global go@latest
@@ -29,7 +37,11 @@ if [[ -n "$languages" ]]; then
       rm composer-setup.php
       ;;
     Python)
-      mise use --global python@latest
+      if [ "$SKIP_PYTHON" = "true" ]; then
+        echo "✓ Python already installed, skipping mise installation..."
+      else
+        mise use --global python@latest
+      fi
       ;;
     Elixir)
       mise use --global erlang@latest

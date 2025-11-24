@@ -5,9 +5,11 @@ setup-storage-pool.sh
 performance-tuning*.sh
 
 # Local testing/development files
-boot-local.sh
 commit.sh
 push-to-github.sh
+
+# Local testing directory (private dev workflow)
+local-testing/
 
 # Machine-specific fixes (not for public deployment)
 *leaf*.sh
