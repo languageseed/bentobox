@@ -1,25 +1,60 @@
 #!/bin/bash
 
-# Set custom wallpaper directly from repository - no copying needed
+# Set custom wallpaper - copy to persistent location first
 echo "Setting up wallpaper..."
 
-# Use wallpaper directly from repository
-WALLPAPER_PATH="$OMAKUB_PATH/wallpaper/pexels-pok-rie-33563-2049422.jpg"
+# Source wallpaper from Bentobox
+SOURCE_WALLPAPER="$OMAKUB_PATH/wallpaper/pexels-pok-rie-33563-2049422.jpg"
+WALLPAPER_NAME="bentobox-default.jpg"
 
-if [ ! -f "$WALLPAPER_PATH" ]; then
-    echo "❌ ERROR: Wallpaper not found at $WALLPAPER_PATH"
+# Create persistent wallpaper directories
+PICTURES_WALLPAPERS="$HOME/Pictures/Wallpapers"
+BACKGROUNDS_DIR="$HOME/.local/share/backgrounds"
+
+mkdir -p "$PICTURES_WALLPAPERS"
+mkdir -p "$BACKGROUNDS_DIR"
+
+if [ ! -f "$SOURCE_WALLPAPER" ]; then
+    echo "❌ ERROR: Source wallpaper not found at $SOURCE_WALLPAPER"
     echo "   Checking wallpaper directory:"
     ls -la "$OMAKUB_PATH/wallpaper/" 2>/dev/null || echo "   Directory doesn't exist!"
     echo "⚠️  Continuing without wallpaper..."
     exit 0
 fi
 
-echo "✅ Wallpaper found: $WALLPAPER_PATH"
-echo "🎨 Setting wallpaper..."
+echo "✅ Source wallpaper found: $SOURCE_WALLPAPER"
+echo "📦 Copying wallpapers to persistent locations..."
 
+# Copy to user Pictures directory (primary persistent location)
+cp "$SOURCE_WALLPAPER" "$PICTURES_WALLPAPERS/$WALLPAPER_NAME"
+echo "   ✓ Copied to ~/Pictures/Wallpapers/"
+
+# Copy to backgrounds directory (used by GNOME)
+cp "$SOURCE_WALLPAPER" "$BACKGROUNDS_DIR/$WALLPAPER_NAME"
+echo "   ✓ Copied to ~/.local/share/backgrounds/"
+
+# Copy all wallpapers from the collection
+echo "📦 Copying Bentobox wallpaper collection..."
+if [ -d "$OMAKUB_PATH/wallpaper" ]; then
+    for wallpaper in "$OMAKUB_PATH/wallpaper"/*.jpg "$OMAKUB_PATH/wallpaper"/*.png; do
+        if [ -f "$wallpaper" ]; then
+            filename=$(basename "$wallpaper")
+            cp "$wallpaper" "$PICTURES_WALLPAPERS/$filename"
+            cp "$wallpaper" "$BACKGROUNDS_DIR/$filename"
+        fi
+    done
+    echo "   ✓ Copied entire wallpaper collection"
+fi
+
+# Use the persistent location for setting wallpaper
+WALLPAPER_PATH="$PICTURES_WALLPAPERS/$WALLPAPER_NAME"
+
+echo "🎨 Setting wallpaper from persistent location..."
 gsettings set org.gnome.desktop.background picture-uri "file://$WALLPAPER_PATH"
 gsettings set org.gnome.desktop.background picture-uri-dark "file://$WALLPAPER_PATH"
 gsettings set org.gnome.desktop.background picture-options 'zoom'
 
 echo "✅ Wallpaper set successfully!"
+echo "   📁 Wallpapers saved to: $PICTURES_WALLPAPERS"
+echo "   🔄 Wallpapers will persist across Bentobox updates"
 

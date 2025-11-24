@@ -1241,11 +1241,35 @@ class BentoboxGUI:
     def apply_wallpaper_worker(self, wallpaper_path):
         """Apply wallpaper in background"""
         try:
+            # Copy to persistent locations first
+            import shutil
+            wallpaper_name = wallpaper_path.name
+            
+            # Create persistent directories
+            pictures_wallpapers = self.omakub_path.parent.parent / 'Pictures' / 'Wallpapers'
+            backgrounds_dir = self.omakub_path.parent / 'backgrounds'
+            
+            pictures_wallpapers.mkdir(parents=True, exist_ok=True)
+            backgrounds_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Copy to persistent locations
+            GLib.idle_add(self.append_to_terminal, "📦 Copying wallpaper to persistent locations...\n")
+            
+            persistent_path = pictures_wallpapers / wallpaper_name
+            shutil.copy2(str(wallpaper_path), str(persistent_path))
+            GLib.idle_add(self.append_to_terminal, f"   ✓ Copied to ~/Pictures/Wallpapers/\n")
+            
+            shutil.copy2(str(wallpaper_path), str(backgrounds_dir / wallpaper_name))
+            GLib.idle_add(self.append_to_terminal, f"   ✓ Copied to ~/.local/share/backgrounds/\n\n")
+            
+            # Use persistent path for setting wallpaper
+            wallpaper_uri = f'file://{persistent_path}'
+            
             # Set GNOME wallpaper
             GLib.idle_add(self.append_to_terminal, "Setting wallpaper for light mode...\n")
             result = subprocess.run([
                 'gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri',
-                f'file://{wallpaper_path}'
+                wallpaper_uri
             ], capture_output=True, text=True)
             
             if result.returncode == 0:
@@ -1256,7 +1280,7 @@ class BentoboxGUI:
             GLib.idle_add(self.append_to_terminal, "Setting wallpaper for dark mode...\n")
             result = subprocess.run([
                 'gsettings', 'set', 'org.gnome.desktop.background', 'picture-uri-dark',
-                f'file://{wallpaper_path}'
+                wallpaper_uri
             ], capture_output=True, text=True)
             
             if result.returncode == 0:
@@ -1266,6 +1290,8 @@ class BentoboxGUI:
             
             # Show completion message
             GLib.idle_add(self.append_to_terminal, "\n🎉 Wallpaper applied successfully!\n")
+            GLib.idle_add(self.append_to_terminal, f"📁 Saved to: {persistent_path}\n")
+            GLib.idle_add(self.append_to_terminal, "🔄 Wallpaper will persist across Bentobox updates\n")
             GLib.idle_add(self.append_to_terminal, "=" * 50 + "\n")
             
         except Exception as e:
