@@ -62,7 +62,8 @@ Bentobox features a modern GTK-based graphical installer with 7 tabs:
 
 ### 📦 Components
 Select from curated applications:
-- **Desktop Apps**: 1Password, Cursor, Tailscale, Brave, Chrome, GIMP, OBS Studio, RubyMine, Sublime Text, WinBoat
+- **Desktop Apps**: 1Password, Cursor, Tailscale, Brave, Chrome, GIMP, OBS Studio, RubyMine, Sublime Text, WinBoat, Draw.io, Blender, REAPER, Timeshift, Logseq, Mission Center, Foliate, Warp Terminal, Kooha, Portmaster, Bitwig Studio, Planify, Picture of the Day
+- **Pop!_OS Desktop**: Pop Shell, Orchis Theme, WhiteSur Theme/Icons, Tela Icons, GNOME Extensions (Dash2Dock Lite, Open Bar, Coverflow Alt-Tab, Vertical Workspaces, Clipboard Indicator)
 - **Languages**: Node.js, Python, Ruby on Rails, Go, PHP, Elixir, Rust, Java
 - **Containers**: Portainer, OpenWebUI, Ollama
 
@@ -82,9 +83,11 @@ Optional security hardening:
 - **Security Audit**: Check current security status
 
 ### 🖼️ Wallpapers
-- Browse included wallpaper collection
-- Preview thumbnails
+- Browse collection of **67 stunning 4K wallpapers**
+- **60 from Unsplash** + **7 from Pexels**
+- Preview thumbnails in the GUI
 - Apply wallpapers instantly
+- Wallpapers persist across updates (saved to ~/Pictures/Wallpapers/)
 
 ### ▶️ Install
 - Live terminal output
@@ -190,11 +193,31 @@ Instead of database containers (MySQL, Redis, PostgreSQL), Bentobox deploys:
 
 During installation, select from:
 - **1Password** - Password manager
-- **Barrier** - Free KVM sharing
+- **Barrier** - Free KVM sharing  
 - **Tailscale** - VPN for remote access
 - **WinBoat** - Run Windows apps seamlessly (includes virt-manager, Docker, KVM)
 - **Sublime Text** - Fast, lightweight code editor
 - **Windows 10 ISO** - Pre-download Windows 10 for VM installations (~5.8 GB)
+- **Draw.io** - Diagram and flowchart editor
+- **Blender** - 3D creation suite
+- **REAPER** - Digital audio workstation
+- **Timeshift** - System backup and restore
+- **Logseq** - Knowledge management and note-taking
+- **Mission Center** - System resource monitor
+- **Foliate** - Modern ebook reader
+- **Warp Terminal** - AI-powered terminal
+- **Kooha** - Screen recorder
+- **Portmaster** - Application firewall (Safing.io)
+- **Bitwig Studio** - Music production
+- **Planify** - Task and project manager
+- **Picture of the Day** - Daily wallpapers
+
+**Pop!_OS Desktop Components** (all opt-in):
+- **Pop Shell** - Tiling window manager
+- **Orchis Theme** - Modern dark GTK theme
+- **WhiteSur Theme** - macOS-like GTK theme and icons
+- **Tela Icons** - Beautiful flat icon theme
+- **GNOME Extensions**: Dash2Dock Lite, Open Bar, Coverflow Alt-Tab, Vertical Workspaces, Clipboard Indicator
 
 **Programming Languages:**
 - Ruby on Rails
@@ -211,16 +234,18 @@ During installation, select from:
 
 ---
 
-## 🎨 Custom Wallpapers
+## 🎨 Wallpaper Collection
 
-Bentobox includes 7 professionally curated wallpapers from [Pexels](https://www.pexels.com), automatically set up during installation:
+Bentobox includes **67 professionally curated 4K wallpapers** from [Unsplash](https://unsplash.com/s/photos/wallpaper-4k) and [Pexels](https://www.pexels.com):
 
+- **60 Unsplash wallpapers** - Mountains, space, abstract, urban, nature photography
+- **7 Pexels wallpapers** - Nature and landscape scenes
 - **Default**: Mountain landscape with dramatic sky
-- 6 additional nature/landscape wallpapers
-- All licensed under [Pexels License](https://www.pexels.com/license/) (free to use)
-- Easy to switch via Settings → Appearance → Background
+- All wallpapers saved to `~/Pictures/Wallpapers/` and persist across updates
+- Licensed under [Unsplash License](https://unsplash.com/license) and [Pexels License](https://www.pexels.com/license/)
+- Easy to switch via Bentobox GUI Wallpapers tab or Settings → Appearance → Background
 
-See `wallpaper/LICENSE.md` for full photographer credits and licensing details.
+See `wallpaper/LICENSE.md` for complete photographer credits (50+ photographers) and licensing details.
 
 ---
 
@@ -518,7 +543,7 @@ Bentobox is open source and contributions are welcome! Feel free to:
 
 Bentobox is released under the **MIT License** (inherited from Omakub).
 
-**Wallpapers**: Licensed under the [Pexels License](https://www.pexels.com/license/) - free to use, modify, and distribute. See `wallpaper/LICENSE.md` for full details and photographer credits.
+**Wallpapers**: Licensed under the [Unsplash License](https://unsplash.com/license) and [Pexels License](https://www.pexels.com/license/) - free to use, modify, and distribute. See `wallpaper/LICENSE.md` for full details and credits for 50+ photographers.
 
 ---
 
@@ -535,9 +560,9 @@ Bentobox is released under the **MIT License** (inherited from Omakub).
 - Focus on containers, AI, and remote work
 
 ### Wallpapers
-- All wallpapers from [Pexels](https://www.pexels.com)
-- Photographers: Pok Rie, Eberhard Grossgasteiger, Felix Mittermeier, Philippe Donn
-- Thank you to the Pexels community for making beautiful photography freely available
+- All wallpapers from [Pexels](https://www.pexels.com) and [Unsplash](https://unsplash.com)
+- 60 photographers from Unsplash + 4 photographers from Pexels
+- Thank you to the Pexels and Unsplash communities for making beautiful photography freely available
 
 ---
 
