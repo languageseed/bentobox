@@ -985,6 +985,14 @@ class BentoboxGUI:
         
         return box
     
+    def clear_terminal(self):
+        """Clear the terminal"""
+        self.terminal.reset(True, True)
+    
+    def append_to_terminal(self, text):
+        """Append text to the terminal"""
+        self.terminal.feed(text.encode('utf-8'))
+    
     def build_status_tab(self) -> Gtk.Box:
         """Build status overview tab"""
         box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=10)
@@ -1582,13 +1590,13 @@ class BentoboxGUI:
         if response != Gtk.ResponseType.YES:
             return
         
-        # Switch to Install tab
-        GLib.idle_add(self.notebook.set_current_page, 5)
+        # Switch to Install tab immediately (we're in main thread)
+        self.notebook.set_current_page(5)
         
-        # Clear terminal and add header
-        GLib.idle_add(self.clear_terminal)
-        GLib.idle_add(self.append_to_terminal, "🎨 Applying Themes & Fonts\n")
-        GLib.idle_add(self.append_to_terminal, "=" * 50 + "\n\n")
+        # Clear terminal and add header immediately
+        self.clear_terminal()
+        self.append_to_terminal("🎨 Applying Themes & Fonts\n")
+        self.append_to_terminal("=" * 50 + "\n\n")
         
         # Run in thread
         thread = threading.Thread(target=self.apply_themes_worker)
