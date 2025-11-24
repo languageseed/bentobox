@@ -6,41 +6,47 @@ Bentobox is a custom fork of [Omakub](https://github.com/basecamp/omakub) by DHH
 
 ## 🚀 Quick Start
 
-### Option 1: One-Line Installation (Terminal)
+### Option 1: Terminal Installation (Traditional)
 
-Transform a fresh Ubuntu 24.04+ installation with a single command:
+Complete installation with interactive terminal prompts:
 
 ```bash
 wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
 ```
 
-This will guide you through the installation with terminal prompts.
+This downloads Bentobox and runs the terminal-based installer immediately.
 
 ### Option 2: GUI Installer (Recommended)
 
-For a visual, point-and-click experience, download and launch the GUI:
+For a visual, point-and-click experience:
+
+**Step 1:** Download Bentobox (without running installation):
 
 ```bash
-# Download Bentobox
-wget -qO- https://raw.githubusercontent.com/languageseed/bentobox/master/boot.sh | bash
-
-# Install GUI dependencies and launcher
+# Clone to the standard location
+git clone https://github.com/languageseed/bentobox.git ~/.local/share/omakub
 cd ~/.local/share/omakub
+```
+
+**Step 2:** Install and launch the GUI:
+
+```bash
+# Install GUI dependencies
 bash install-gui.sh
 
-# Launch the GUI (from Applications menu or terminal)
+# Launch Bentobox GUI
 bentobox-gui
 ```
 
 The GUI provides:
 - 📦 Visual component selection
-- 🎨 Desktop theme customization
+- 🎨 Desktop theme customization  
 - 🔒 Security configuration
 - 🖼️ Wallpaper browser
 - ▶️ Live installation progress
 - 📊 Status dashboard
 
-**Note:** After using the GUI to configure your preferences, click "Start Installation" to begin. You can also find "Bentobox" in your Applications menu after running `install-gui.sh`.
+**Note:** Configure your preferences in the GUI, then click "Start Installation" to begin. The Bentobox launcher will also appear in your Applications menu.
 
 ---
 
