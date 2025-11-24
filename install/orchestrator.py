@@ -170,9 +170,18 @@ class InstallationOrchestrator:
         """Apply user selections from config"""
         # Apply optional app selections
         selected_apps = self.config.get('desktop', {}).get('optional_apps', [])
+        desktop_config = self.config.get('desktop', {})
+        
         for name, comp in self.components.items():
             if comp.category == 'optional':
-                comp.user_selected = name in selected_apps or comp.name.replace('_', '-') in selected_apps
+                # Check if in selected_apps list
+                if name in selected_apps or comp.name.replace('_', '-') in selected_apps:
+                    comp.user_selected = True
+                # Check Pop!_OS specific flags
+                elif name.startswith('popos_') and desktop_config.get(name, False):
+                    comp.user_selected = True
+                else:
+                    comp.user_selected = False
     
     def build_install_queue(self) -> List[Component]:
         """Build ordered list of components to install"""

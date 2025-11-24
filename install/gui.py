@@ -140,6 +140,17 @@ class BentoboxGUI:
                 'apply_gnome_settings': self.gnome_settings_cb.get_active() if hasattr(self, 'gnome_settings_cb') else True,
                 'apply_hotkeys': self.gnome_hotkeys_cb.get_active() if hasattr(self, 'gnome_hotkeys_cb') else True,
                 'install_extensions': self.gnome_extensions_cb.get_active() if hasattr(self, 'gnome_extensions_cb') else True,
+                # Pop!_OS Desktop Components
+                'popos_pop_shell': self.popos_pop_shell_cb.get_active() if hasattr(self, 'popos_pop_shell_cb') else False,
+                'popos_orchis_theme': self.popos_orchis_theme_cb.get_active() if hasattr(self, 'popos_orchis_theme_cb') else False,
+                'popos_whitesur_gtk': self.popos_whitesur_gtk_cb.get_active() if hasattr(self, 'popos_whitesur_gtk_cb') else False,
+                'popos_tela_icons': self.popos_tela_icons_cb.get_active() if hasattr(self, 'popos_tela_icons_cb') else False,
+                'popos_whitesur_icons': self.popos_whitesur_icons_cb.get_active() if hasattr(self, 'popos_whitesur_icons_cb') else False,
+                'popos_dash2dock_lite': self.popos_dash2dock_lite_cb.get_active() if hasattr(self, 'popos_dash2dock_lite_cb') else False,
+                'popos_openbar': self.popos_openbar_cb.get_active() if hasattr(self, 'popos_openbar_cb') else False,
+                'popos_coverflow': self.popos_coverflow_cb.get_active() if hasattr(self, 'popos_coverflow_cb') else False,
+                'popos_vertical_workspaces': self.popos_vertical_workspaces_cb.get_active() if hasattr(self, 'popos_vertical_workspaces_cb') else False,
+                'popos_clipboard_indicator': self.popos_clipboard_indicator_cb.get_active() if hasattr(self, 'popos_clipboard_indicator_cb') else False,
             },
             'languages': list(self.selected_languages),
             'containers': list(self.selected_containers),
@@ -376,10 +387,10 @@ class BentoboxGUI:
         features_grid.set_margin_top(10)
         
         features = [
-            ("✅", "Safe & Idempotent", "Can be run multiple times safely"),
+            ("✅", "Safe &amp; Idempotent", "Can be run multiple times safely"),
             ("🔍", "Smart Detection", "Skips already-installed packages"),
             ("🎨", "Beautiful Themes", "10+ carefully curated color schemes"),
-            ("⚡", "Fast & Reliable", "Robust error handling and state tracking"),
+            ("⚡", "Fast &amp; Reliable", "Robust error handling and state tracking"),
             ("📝", "Complete Documentation", "Detailed guides for everything"),
             ("🔧", "Easy Customization", "Pick exactly what you want"),
         ]
@@ -702,6 +713,85 @@ class BentoboxGUI:
         extensions_info.set_margin_top(5)
         extensions_info.set_line_wrap(True)
         gnome_box.pack_start(extensions_info, False, False, 0)
+        
+        # === POP!_OS DESKTOP CUSTOMIZATION ===
+        popos_label = Gtk.Label()
+        popos_label.set_markup("<b>🎨 Pop!_OS Desktop Components</b>")
+        popos_label.set_halign(Gtk.Align.START)
+        popos_label.set_margin_top(10)
+        content.pack_start(popos_label, False, False, 0)
+        
+        popos_info = Gtk.Label()
+        popos_info.set_markup("<small><i>Optional Pop!_OS-inspired themes, icons, and extensions (not selected by default)</i></small>")
+        popos_info.set_halign(Gtk.Align.START)
+        popos_info.set_margin_start(20)
+        content.pack_start(popos_info, False, False, 0)
+        
+        popos_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=5)
+        popos_box.set_margin_start(20)
+        content.pack_start(popos_box, False, False, 0)
+        
+        # Pop Shell
+        self.popos_pop_shell_cb = Gtk.CheckButton(label="Pop Shell - Tiling window manager")
+        self.popos_pop_shell_cb.set_active(self.config.get('desktop', {}).get('popos_pop_shell', False))
+        popos_box.pack_start(self.popos_pop_shell_cb, False, False, 0)
+        
+        # Themes
+        popos_themes_label = Gtk.Label()
+        popos_themes_label.set_markup("<small><b>Themes:</b></small>")
+        popos_themes_label.set_halign(Gtk.Align.START)
+        popos_themes_label.set_margin_top(5)
+        popos_box.pack_start(popos_themes_label, False, False, 0)
+        
+        self.popos_orchis_theme_cb = Gtk.CheckButton(label="  Orchis GTK Theme - Modern dark theme")
+        self.popos_orchis_theme_cb.set_active(self.config.get('desktop', {}).get('popos_orchis_theme', False))
+        popos_box.pack_start(self.popos_orchis_theme_cb, False, False, 0)
+        
+        self.popos_whitesur_gtk_cb = Gtk.CheckButton(label="  WhiteSur GTK Theme - macOS-like appearance")
+        self.popos_whitesur_gtk_cb.set_active(self.config.get('desktop', {}).get('popos_whitesur_gtk', False))
+        popos_box.pack_start(self.popos_whitesur_gtk_cb, False, False, 0)
+        
+        # Icons
+        popos_icons_label = Gtk.Label()
+        popos_icons_label.set_markup("<small><b>Icons:</b></small>")
+        popos_icons_label.set_halign(Gtk.Align.START)
+        popos_icons_label.set_margin_top(5)
+        popos_box.pack_start(popos_icons_label, False, False, 0)
+        
+        self.popos_tela_icons_cb = Gtk.CheckButton(label="  Tela Icon Theme - Beautiful flat icons")
+        self.popos_tela_icons_cb.set_active(self.config.get('desktop', {}).get('popos_tela_icons', False))
+        popos_box.pack_start(self.popos_tela_icons_cb, False, False, 0)
+        
+        self.popos_whitesur_icons_cb = Gtk.CheckButton(label="  WhiteSur Icon Theme - macOS-like icons")
+        self.popos_whitesur_icons_cb.set_active(self.config.get('desktop', {}).get('popos_whitesur_icons', False))
+        popos_box.pack_start(self.popos_whitesur_icons_cb, False, False, 0)
+        
+        # Extensions
+        popos_ext_label = Gtk.Label()
+        popos_ext_label.set_markup("<small><b>GNOME Extensions:</b></small>")
+        popos_ext_label.set_halign(Gtk.Align.START)
+        popos_ext_label.set_margin_top(5)
+        popos_box.pack_start(popos_ext_label, False, False, 0)
+        
+        self.popos_dash2dock_lite_cb = Gtk.CheckButton(label="  Dash2Dock Lite - Animated dock")
+        self.popos_dash2dock_lite_cb.set_active(self.config.get('desktop', {}).get('popos_dash2dock_lite', False))
+        popos_box.pack_start(self.popos_dash2dock_lite_cb, False, False, 0)
+        
+        self.popos_openbar_cb = Gtk.CheckButton(label="  Open Bar - Customizable top panel")
+        self.popos_openbar_cb.set_active(self.config.get('desktop', {}).get('popos_openbar', False))
+        popos_box.pack_start(self.popos_openbar_cb, False, False, 0)
+        
+        self.popos_coverflow_cb = Gtk.CheckButton(label="  Coverflow Alt-Tab - Enhanced Alt+Tab")
+        self.popos_coverflow_cb.set_active(self.config.get('desktop', {}).get('popos_coverflow', False))
+        popos_box.pack_start(self.popos_coverflow_cb, False, False, 0)
+        
+        self.popos_vertical_workspaces_cb = Gtk.CheckButton(label="  Vertical Workspaces - V-Shell layout")
+        self.popos_vertical_workspaces_cb.set_active(self.config.get('desktop', {}).get('popos_vertical_workspaces', False))
+        popos_box.pack_start(self.popos_vertical_workspaces_cb, False, False, 0)
+        
+        self.popos_clipboard_indicator_cb = Gtk.CheckButton(label="  Clipboard Indicator - Clipboard history")
+        self.popos_clipboard_indicator_cb.set_active(self.config.get('desktop', {}).get('popos_clipboard_indicator', False))
+        popos_box.pack_start(self.popos_clipboard_indicator_cb, False, False, 0)
         
         # === QUICK ACTIONS ===
         actions_label = Gtk.Label()

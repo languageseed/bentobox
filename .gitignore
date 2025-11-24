@@ -40,6 +40,10 @@ LIBVIRT_GUESTS_SHUTDOWN_ERROR.md
 DEPLOYMENT_ISSUES_REPORT.md
 FIX_SUMMARY.md
 WALLPAPER_FEATURE_SUMMARY.md
+POPOS_DESKTOP_INTEGRATION.md
+
+# Archived original files
+docs/archived/
 
 # IDE and editor files
 .vscode/
