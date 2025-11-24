@@ -9,7 +9,10 @@ echo "📦 Installing Bentobox GUI..."
 
 # Install system dependencies
 echo "Installing GTK dependencies..."
-sudo apt update
+
+# Update apt, but don't fail if there are repository warnings
+sudo apt update 2>&1 | grep -v "Conflicting values set for option Signed-By" || true
+
 sudo apt install -y python3-gi python3-gi-cairo gir1.2-gtk-3.0 gir1.2-vte-2.91 gir1.2-gdkpixbuf-2.0 zenity
 
 # Install Python dependencies (system packages for Ubuntu 24.04)

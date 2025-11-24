@@ -11,9 +11,15 @@ fi
 
 echo "Installing Warp Terminal..."
 
+# Remove any existing conflicting repository configuration
+sudo rm -f /etc/apt/sources.list.d/warp.list
+sudo rm -f /usr/share/keyrings/warp.gpg
+
 # Add Warp GPG key and repository
 curl -fsSL https://releases.warp.dev/linux/keys/warp.asc | sudo gpg --dearmor -o /usr/share/keyrings/warp.gpg
-echo "deb [arch=amd64 signed-by=/usr/share/keyrings/warp.gpg] https://releases.warp.dev/linux/deb stable main" | sudo tee /etc/apt/sources.list.d/warp.list
+
+# Create repository configuration with proper signed-by
+echo "deb [arch=amd64 signed-by=/usr/share/keyrings/warp.gpg] https://releases.warp.dev/linux/deb stable main" | sudo tee /etc/apt/sources.list.d/warp.list > /dev/null
 
 # Update and install
 sudo apt update -y
