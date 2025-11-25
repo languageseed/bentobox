@@ -10,13 +10,29 @@ ________                     __        __
 '
 
 echo -e "$ascii_art"
-echo "=> Bentobox - Professional Ubuntu development environment"
-echo "=> Fresh Ubuntu 24.04+ installations only"
+echo "=> Bentobox - Professional development environment"
+echo "=> Ubuntu 24.04+ or Debian 13+ (fresh installations recommended)"
 echo "=> Fork of Omakub by languageseed"
 echo -e "\nBegin installation (or abort with ctrl+c)..."
 
-sudo apt-get update >/dev/null
-sudo apt-get install -y git >/dev/null
+# Detect distribution
+if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    DISTRO_ID="$ID"
+else
+    DISTRO_ID="unknown"
+fi
+
+# Debian-specific: Install prerequisites first
+if [[ "$DISTRO_ID" == "debian" ]] || [[ "$DISTRO_ID" == "raspbian" ]]; then
+    echo "📦 Installing Debian prerequisites..."
+    sudo apt-get update >/dev/null
+    sudo apt-get install -y git python3-pip python3-yaml build-essential >/dev/null
+    echo "✓ Prerequisites installed"
+else
+    sudo apt-get update >/dev/null
+    sudo apt-get install -y git >/dev/null
+fi
 
 # Set installation path
 export OMAKUB_PATH="$HOME/.local/share/omakub"

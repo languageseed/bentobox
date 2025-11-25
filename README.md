@@ -1,6 +1,6 @@
 # Bentobox
 
-**A curated Ubuntu 24.04+ development environment with a beautiful GUI installer.**
+**A curated development environment for Ubuntu 24.04+ and Debian 13+ with a beautiful GUI installer.**
 
 Bentobox is a custom fork of [Omakub](https://github.com/basecamp/omakub) by DHH, optimized for professional developers with modern tools, AI capabilities, security hardening, and an intuitive graphical installer.
 
@@ -250,7 +250,9 @@ See `wallpaper/LICENSE.md` for complete photographer credits (50+ photographers)
 
 ## 💻 System Requirements
 
-- **OS**: Ubuntu 24.04+ (fresh installation recommended)
+- **OS**: Ubuntu 24.04+ OR Debian 13+ (Trixie) - fresh installation recommended
+  - Supported: Ubuntu Desktop, Pop!_OS, Elementary OS, Linux Mint, KDE Neon
+  - Debian 12 (Bookworm) may work but is not officially supported
 - **RAM**: 8GB minimum, 16GB recommended (20GB+ if using WinBoat)
 - **Disk**: 30GB minimum, 50GB+ recommended (80GB+ if using WinBoat with Windows)
 - **Network**: Internet connection required for installation
@@ -260,9 +262,9 @@ See `wallpaper/LICENSE.md` for complete photographer credits (50+ photographers)
 
 ## 📖 Installation Guide
 
-### 1. Fresh Ubuntu Installation
+### 1. Fresh Installation
 
-Start with a clean Ubuntu 24.04+ installation (desktop environment).
+Start with a clean Ubuntu 24.04+ or Debian 13+ installation (desktop environment).
 
 ### 2. Run Installation Command
 

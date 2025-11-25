@@ -8,14 +8,35 @@ echo "🎨 Bentobox GUI Installer"
 echo "=========================="
 echo ""
 
-# Check if running on Ubuntu 24.04+
+# Check if running on Ubuntu 24.04+ or Debian 13+
 if [ -f /etc/os-release ]; then
     . /etc/os-release
-    if [[ "$ID" != "ubuntu" ]] || [[ "${VERSION_ID%%.*}" -lt 24 ]]; then
-        echo "❌ This installer requires Ubuntu 24.04 or later"
-        echo "   Detected: $PRETTY_NAME"
-        exit 1
-    fi
+    
+    case "$ID" in
+        ubuntu|pop|elementary|mint|neon)
+            if [[ "${VERSION_ID%%.*}" -lt 24 ]]; then
+                echo "❌ This installer requires Ubuntu 24.04 or later"
+                echo "   Detected: $PRETTY_NAME"
+                exit 1
+            fi
+            ;;
+        debian|raspbian)
+            if [[ "${VERSION_ID%%.*}" -lt 13 ]]; then
+                echo "❌ This installer requires Debian 13 (Trixie) or later"
+                echo "   Detected: $PRETTY_NAME"
+                echo "   Note: Debian 12 may work but is not officially supported"
+                exit 1
+            fi
+            ;;
+        *)
+            echo "❌ Unsupported distribution: $PRETTY_NAME"
+            echo ""
+            echo "Bentobox supports:"
+            echo "  • Ubuntu 24.04+ (and derivatives)"
+            echo "  • Debian 13+ (Trixie)"
+            exit 1
+            ;;
+    esac
 fi
 
 # Check for graphical environment

@@ -1,0 +1,366 @@
+# Package Name Mappings
+# Maps generic package names to distribution-specific names
+
+# Usage in code:
+#   mapped=$(distro_map_package "python-gtk")
+#   # Returns: "python3-gi" on Ubuntu/Debian, "python-gobject" on Arch
+
+# Format:
+#   generic_name:
+#     ubuntu: package_name
+#     debian: package_name
+#     fedora: package_name
+#     arch: package_name
+
+# ============================================================================
+# PYTHON PACKAGES
+# ============================================================================
+
+python-gtk:
+  ubuntu: python3-gi
+  debian: python3-gi
+  fedora: python3-gobject
+  arch: python-gobject
+  description: Python GTK bindings
+
+python-yaml:
+  ubuntu: python3-yaml
+  debian: python3-yaml
+  fedora: python3-pyyaml
+  arch: python-yaml
+  description: Python YAML parser
+
+python-requests:
+  ubuntu: python3-requests
+  debian: python3-requests
+  fedora: python3-requests
+  arch: python-requests
+  description: Python HTTP library
+
+python-bs4:
+  ubuntu: python3-bs4
+  debian: python3-bs4
+  fedora: python3-beautifulsoup4
+  arch: python-beautifulsoup4
+  description: Python Beautiful Soup HTML parser
+
+python-pil:
+  ubuntu: python3-pil
+  debian: python3-pil
+  fedora: python3-pillow
+  arch: python-pillow
+  description: Python Imaging Library
+
+# ============================================================================
+# GTK/GUI PACKAGES
+# ============================================================================
+
+gtk3-dev:
+  ubuntu: gir1.2-gtk-3.0
+  debian: gir1.2-gtk-3.0
+  fedora: gtk3-devel
+  arch: gtk3
+  description: GTK3 development files
+
+vte-dev:
+  ubuntu: gir1.2-vte-2.91
+  debian: gir1.2-vte-2.91
+  fedora: vte291
+  arch: vte3
+  description: VTE terminal widget development files
+
+gdkpixbuf-dev:
+  ubuntu: gir1.2-gdkpixbuf-2.0
+  debian: gir1.2-gdkpixbuf-2.0
+  fedora: gdk-pixbuf2-devel
+  arch: gdk-pixbuf2
+  description: GDK Pixbuf image library
+
+# ============================================================================
+# BUILD TOOLS
+# ============================================================================
+
+build-tools:
+  ubuntu: build-essential
+  debian: build-essential
+  fedora: "@development-tools"
+  arch: base-devel
+  description: Basic build tools (gcc, make, etc.)
+
+pkg-config:
+  ubuntu: pkg-config
+  debian: pkg-config
+  fedora: pkgconf
+  arch: pkgconf
+  description: Package configuration tool
+
+autoconf:
+  ubuntu: autoconf
+  debian: autoconf
+  fedora: autoconf
+  arch: autoconf
+  description: Automatic configure script builder
+
+bison:
+  ubuntu: bison
+  debian: bison
+  fedora: bison
+  arch: bison
+  description: Parser generator
+
+# ============================================================================
+# DEVELOPMENT LIBRARIES
+# ============================================================================
+
+ssl-dev:
+  ubuntu: libssl-dev
+  debian: libssl-dev
+  fedora: openssl-devel
+  arch: openssl
+  description: OpenSSL development files
+
+readline-dev:
+  ubuntu: libreadline-dev
+  debian: libreadline-dev
+  fedora: readline-devel
+  arch: readline
+  description: GNU readline development files
+
+zlib-dev:
+  ubuntu: zlib1g-dev
+  debian: zlib1g-dev
+  fedora: zlib-devel
+  arch: zlib
+  description: Compression library development files
+
+yaml-dev:
+  ubuntu: libyaml-dev
+  debian: libyaml-dev
+  fedora: libyaml-devel
+  arch: libyaml
+  description: YAML parser library development files
+
+ncurses-dev:
+  ubuntu: libncurses5-dev
+  debian: libncurses5-dev
+  fedora: ncurses-devel
+  arch: ncurses
+  description: Terminal handling library development files
+
+ffi-dev:
+  ubuntu: libffi-dev
+  debian: libffi-dev
+  fedora: libffi-devel
+  arch: libffi
+  description: Foreign function interface library
+
+gdbm-dev:
+  ubuntu: libgdbm-dev
+  debian: libgdbm-dev
+  fedora: gdbm-devel
+  arch: gdbm
+  description: GNU database library development files
+
+sqlite-dev:
+  ubuntu: libsqlite3-0
+  debian: libsqlite3-0
+  fedora: sqlite-devel
+  arch: sqlite
+  description: SQLite database library
+
+mysql-dev:
+  ubuntu: libmysqlclient-dev
+  debian: libmysqlclient-dev
+  fedora: mysql-devel
+  arch: mariadb-libs
+  description: MySQL client library development files
+
+postgres-dev:
+  ubuntu: libpq-dev
+  debian: libpq-dev
+  fedora: libpq-devel
+  arch: postgresql-libs
+  description: PostgreSQL client library development files
+
+vips-dev:
+  ubuntu: libvips
+  debian: libvips
+  fedora: vips-devel
+  arch: libvips
+  description: Image processing library
+
+imagemagick:
+  ubuntu: imagemagick
+  debian: imagemagick
+  fedora: ImageMagick
+  arch: imagemagick
+  description: Image manipulation tools
+
+magickwand-dev:
+  ubuntu: libmagickwand-dev
+  debian: libmagickwand-dev
+  fedora: ImageMagick-devel
+  arch: imagemagick
+  description: ImageMagick development files
+
+# ============================================================================
+# SYSTEM UTILITIES
+# ============================================================================
+
+locate:
+  ubuntu: plocate
+  debian: plocate
+  fedora: mlocate
+  arch: plocate
+  description: Fast file locator
+
+apache-utils:
+  ubuntu: apache2-utils
+  debian: apache2-utils
+  fedora: httpd-tools
+  arch: apache
+  description: Apache HTTP server utilities
+
+find-alt:
+  ubuntu: fd-find
+  debian: fd-find
+  fedora: fd-find
+  arch: fd
+  description: Modern find alternative
+
+# ============================================================================
+# TERMINAL APPLICATIONS
+# ============================================================================
+
+fuzzy-finder:
+  ubuntu: fzf
+  debian: fzf
+  fedora: fzf
+  arch: fzf
+  description: Command-line fuzzy finder
+
+grep-alt:
+  ubuntu: ripgrep
+  debian: ripgrep
+  fedora: ripgrep
+  arch: ripgrep
+  description: Modern grep alternative
+
+cat-alt:
+  ubuntu: bat
+  debian: bat
+  fedora: bat
+  arch: bat
+  description: Cat with syntax highlighting
+
+ls-alt:
+  ubuntu: eza
+  debian: eza
+  fedora: eza
+  arch: eza
+  description: Modern ls alternative
+
+cd-alt:
+  ubuntu: zoxide
+  debian: zoxide
+  fedora: zoxide
+  arch: zoxide
+  description: Smarter cd command
+
+terminal-multiplexer:
+  ubuntu: tmux
+  debian: tmux
+  fedora: tmux
+  arch: tmux
+  description: Terminal multiplexer
+
+# ============================================================================
+# CONTAINER & VIRTUALIZATION
+# ============================================================================
+
+docker:
+  ubuntu: docker-ce
+  debian: docker-ce
+  fedora: docker-ce
+  arch: docker
+  description: Container platform
+
+docker-compose:
+  ubuntu: docker-compose-plugin
+  debian: docker-compose-plugin
+  fedora: docker-compose-plugin
+  arch: docker-compose
+  description: Docker compose tool
+
+# ============================================================================
+# LANGUAGE RUNTIMES
+# ============================================================================
+
+rust-compiler:
+  ubuntu: rustc
+  debian: rustc
+  fedora: rust
+  arch: rust
+  description: Rust programming language compiler
+
+clang:
+  ubuntu: clang
+  debian: clang
+  fedora: clang
+  arch: clang
+  description: C/C++ compiler (LLVM)
+
+# ============================================================================
+# REDIS & DATABASES
+# ============================================================================
+
+redis-tools:
+  ubuntu: redis-tools
+  debian: redis-tools
+  fedora: redis
+  arch: redis
+  description: Redis command-line tools
+
+sqlite:
+  ubuntu: sqlite3
+  debian: sqlite3
+  fedora: sqlite
+  arch: sqlite
+  description: SQLite database engine
+
+postgres-client:
+  ubuntu: postgresql-client
+  debian: postgresql-client
+  fedora: postgresql
+  arch: postgresql
+  description: PostgreSQL client tools
+
+# ============================================================================
+# DOCUMENTATION TOOLS
+# ============================================================================
+
+mupdf:
+  ubuntu: mupdf
+  debian: mupdf
+  fedora: mupdf
+  arch: mupdf
+  description: Lightweight PDF viewer
+
+mupdf-tools:
+  ubuntu: mupdf-tools
+  debian: mupdf-tools
+  fedora: mupdf
+  arch: mupdf-tools
+  description: MuPDF command-line tools
+
+# ============================================================================
+# PYTHON PACKAGE MANAGER
+# ============================================================================
+
+pipx:
+  ubuntu: pipx
+  debian: pipx
+  fedora: pipx
+  arch: python-pipx
+  description: Install Python applications in isolated environments
+

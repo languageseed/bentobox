@@ -17,6 +17,7 @@ bentobox-config.yaml
 
 # Local testing directory (private dev workflow)
 local-testing/
+screenshots-from-leaf/
 
 # Machine-specific fixes (not for public deployment)
 *leaf*.sh
