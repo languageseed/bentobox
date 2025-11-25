@@ -17,14 +17,15 @@ if [ "$BENTOBOX_MODE" = "unattended" ] || [ "$BENTOBOX_AI_MODE" = "true" ]; then
     exit 0
 fi
 
-sudo apt install -y gnome-shell-extension-manager gir1.2-gtop-2.0 gir1.2-clutter-1.0
+# Install dependencies for extensions (Extension Manager is installed in app-gnome-tweak-tool.sh)
+sudo apt install -y gir1.2-gtop-2.0 gir1.2-clutter-1.0
 pipx install gnome-extensions-cli --system-site-packages
 
-# Turn off default Ubuntu extensions
-gnome-extensions disable tiling-assistant@ubuntu.com
-gnome-extensions disable ubuntu-appindicators@ubuntu.com
-gnome-extensions disable ubuntu-dock@ubuntu.com
-gnome-extensions disable ding@rastersoft.com
+# Turn off default Ubuntu extensions (if they exist)
+gnome-extensions disable tiling-assistant@ubuntu.com 2>/dev/null || true
+gnome-extensions disable ubuntu-appindicators@ubuntu.com 2>/dev/null || true
+gnome-extensions disable ubuntu-dock@ubuntu.com 2>/dev/null || true
+gnome-extensions disable ding@rastersoft.com 2>/dev/null || true
 
 # Pause to assure user is ready to accept confirmations
 gum confirm "To install Gnome extensions, you need to accept some confirmations. Ready?" || echo "Proceeding..."
