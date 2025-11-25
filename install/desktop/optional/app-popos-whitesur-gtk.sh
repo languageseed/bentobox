@@ -36,7 +36,18 @@ chmod +x install.sh
 ./install.sh -d ~/.themes
 
 echo "✅ WhiteSur GTK theme installed successfully!"
-echo "   Use GNOME Tweaks to apply the theme"
+echo ""
+echo "📝 To apply the theme:"
+echo "   1. Open GNOME Tweaks (Applications → Tweaks)"
+echo "   2. Go to Appearance section"
+echo "   3. Select 'WhiteSur-Dark' under Applications"
+echo ""
+echo "💡 If you don't see the theme in GNOME Tweaks:"
+echo "   • Restart GNOME Tweaks or logout/login"
+echo "   • For shell themes, install User Themes extension first"
+echo ""
+echo "🔧 Apply via command line:"
+echo "   gsettings set org.gnome.desktop.interface gtk-theme 'WhiteSur-Dark'"
 
 exit 0
 

@@ -36,7 +36,17 @@ chmod +x install.sh
 ./install.sh
 
 echo "✅ Tela icons installed successfully!"
-echo "   Use GNOME Tweaks to apply the icons"
+echo ""
+echo "📝 To apply the icons:"
+echo "   1. Open GNOME Tweaks (Applications → Tweaks)"
+echo "   2. Go to Appearance section"
+echo "   3. Select 'Tela' under Icons"
+echo ""
+echo "💡 If you don't see the icons in GNOME Tweaks:"
+echo "   • Restart GNOME Tweaks or logout/login"
+echo ""
+echo "🔧 Apply via command line:"
+echo "   gsettings set org.gnome.desktop.interface icon-theme 'Tela'"
 
 exit 0
 
